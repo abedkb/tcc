@@ -1,0 +1,2680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Make Pack Shift Roster</title>
+
+
+    <style>
+
+        /* ==================================================
+           DIGITAL TCC DUTY ROSTER
+        ================================================== */
+
+
+        /* ==================================================
+           COLOUR SYSTEM
+        ================================================== */
+
+        :root {
+
+            /* Shift Colours */
+
+            --shift-a: #356b9c;
+            --shift-a-dark: #275478;
+
+            --shift-b: #63527f;
+            --shift-b-dark: #4d3d68;
+
+            --shift-c: #d5b35e;
+            --shift-c-dark: #b89037;
+
+            --shift-d: #4f8a72;
+            --shift-d-dark: #3d6f5b;
+
+
+            /* Board Colours */
+
+            --dark-section: #3d4246;
+            --dark-section-2: #30363a;
+
+            --board-bg: #ececec;
+            --panel-bg: #f8f8f8;
+
+            --border: #777;
+            --light-border: #b5b5b5;
+
+            --white: #ffffff;
+            --text-dark: #333333;
+
+
+            /* Status Colours */
+
+            --vacation: #7da3a1;
+            --sick-leave: #b98787;
+            --family-leave: #9ca8b0;
+            --others: #b08c52;
+            --permission: #c9793f;
+
+        }
+
+
+        /* ==================================================
+           RESET
+        ================================================== */
+
+        * {
+
+            margin: 0;
+            padding: 0;
+
+            box-sizing: border-box;
+
+        }
+
+
+        body {
+
+            font-family:
+                Arial,
+                Helvetica,
+                sans-serif;
+
+            background:
+                var(--board-bg);
+
+            color:
+                var(--text-dark);
+
+            overflow-x: hidden;
+
+        }
+
+
+        /* ==================================================
+           MAIN HEADER
+        ================================================== */
+
+        .board-header {
+
+            background:
+                var(--white);
+
+            padding:
+                10px 20px;
+
+            display:
+                flex;
+
+            justify-content:
+                space-between;
+
+            align-items:
+                center;
+
+            min-height:
+                75px;
+
+        }
+
+
+        .board-title {
+
+            text-align:
+                center;
+
+            flex:
+                1;
+
+        }
+
+
+        .board-title h1 {
+
+            font-size:
+                clamp(22px, 2.2vw, 42px);
+
+            font-weight:
+                500;
+
+            letter-spacing:
+                2px;
+
+            color:
+                #555;
+
+        }
+
+
+        /* ==================================================
+           BRAND LOGO (CSS-built "TCC" mark, no image asset)
+           Built at its natural 240x172 size, then scaled down
+           and clipped to fit the header via a fixed-size wrapper.
+        ================================================== */
+
+        .brand-logo-wrap {
+
+            width: 62px;
+            height: 45px;
+            overflow: hidden;
+            flex-shrink: 0;
+
+        }
+
+
+        .brand-logo-container {
+
+            width: 240px;
+            height: 172px;
+
+            background: transparent;
+
+            overflow: hidden;
+
+            transform: scale(0.26);
+            transform-origin: top left;
+
+        }
+
+
+        .brand-logo {
+
+            position: relative;
+
+            width: 100%;
+            height: 100%;
+
+            background: transparent;
+
+            overflow: hidden;
+
+        }
+
+
+        .brand-t-top {
+
+            position: absolute;
+
+            top: 18px;
+            left: -35px;
+
+            width: 150px;
+            height: 18px;
+
+            background: #008c5a;
+
+            border-radius: 0 9px 9px 0;
+
+        }
+
+
+        .brand-t-body {
+
+            position: absolute;
+
+            top: 31px;
+            left: 20px;
+
+            width: 42px;
+            height: 140px;
+
+            background: #008c5a;
+
+            border-radius: 0 0 13px 0;
+
+        }
+
+
+        .brand-c1 {
+
+            position: absolute;
+
+            top: 8px;
+            left: 90px;
+
+            width: 78px;
+            height: 130px;
+
+            background: #008c5a;
+
+            border-radius: 28px;
+
+            overflow: hidden;
+
+        }
+
+
+        .brand-c1::after {
+
+            content: "";
+
+            position: absolute;
+
+            top: 23px;
+            right: -15px;
+
+            width: 48px;
+            height: 84px;
+
+            background: var(--white);
+
+            border-radius: 0 0 0 18px;
+
+        }
+
+
+        .brand-c2 {
+
+            position: absolute;
+
+            top: -6px;
+            left: 163px;
+
+            width: 95px;
+            height: 138px;
+
+            background: #008c5a;
+
+            border-radius: 32px;
+
+            overflow: hidden;
+
+        }
+
+
+        .brand-c2::after {
+
+            content: "";
+
+            position: absolute;
+
+            top: 30px;
+            right: -10px;
+
+            width: 55px;
+            height: 88px;
+
+            background: var(--white);
+
+            border-radius: 0 0 0 18px;
+
+        }
+
+
+        .fullscreen-button {
+
+            background:
+                var(--dark-section);
+
+            color:
+                white;
+
+            border:
+                none;
+
+            padding:
+                10px 15px;
+
+            cursor:
+                pointer;
+
+            border-radius:
+                4px;
+
+            font-size:
+                13px;
+
+        }
+
+
+        .fullscreen-button:hover {
+
+            opacity:
+                0.85;
+
+        }
+
+
+        /* ==================================================
+           MAIN BOARD
+        ================================================== */
+
+        .roster-board {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(4, minmax(300px, 1fr));
+
+            width:
+                100%;
+
+            min-height:
+                calc(100vh - 75px);
+
+            border-bottom:
+                2px solid var(--border);
+
+        }
+
+
+        /* ==================================================
+           SHIFT COLUMN
+        ================================================== */
+
+        .shift-column {
+
+            background:
+                var(--panel-bg);
+
+            border-right:
+                2px solid var(--border);
+
+            min-width:
+                0;
+
+            position:
+                relative;
+
+        }
+
+
+        .shift-column:last-child {
+
+            border-right:
+                none;
+
+        }
+
+
+        /* ==================================================
+           SHIFT HEADERS
+        ================================================== */
+
+        .shift-name {
+
+            height:
+                72px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            color:
+                white;
+
+            font-size:
+                clamp(24px, 2vw, 38px);
+
+            font-weight:
+                500;
+
+            letter-spacing:
+                2px;
+
+        }
+
+
+        .shift-a {
+
+            background:
+                var(--shift-a);
+
+        }
+
+
+        .shift-b {
+
+            background:
+                var(--shift-b);
+
+        }
+
+
+        .shift-c {
+
+            background:
+                var(--shift-c);
+
+        }
+
+
+        .shift-d {
+
+            background:
+                var(--shift-d);
+
+        }
+
+
+        /* ==================================================
+           SECTION HEADERS
+        ================================================== */
+
+        .section-header {
+
+            background:
+                var(--dark-section);
+
+            color:
+                white;
+
+            text-align:
+                center;
+
+            font-size:
+                clamp(14px, 1.1vw, 22px);
+
+            font-weight:
+                500;
+
+            padding:
+                7px 5px;
+
+            letter-spacing:
+                1px;
+
+            border-top:
+                1px solid #222;
+
+            border-bottom:
+                1px solid #222;
+
+        }
+
+
+        .sub-section-title {
+
+            background:
+                #f4f4f4;
+
+            text-align:
+                center;
+
+            padding:
+                5px;
+
+            font-size:
+                14px;
+
+            font-weight:
+                500;
+
+            color:
+                #555;
+
+            border-bottom:
+                1px solid var(--light-border);
+
+        }
+
+
+        /* ==================================================
+           MACHINE AREA
+        ================================================== */
+
+        .machine-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                6px;
+
+            padding:
+                7px;
+
+        }
+
+
+        .machine-card {
+
+            border:
+                1px solid var(--border);
+
+            background:
+                white;
+
+            min-height:
+                95px;
+
+        }
+
+
+        .machine-title {
+
+            text-align:
+                center;
+
+            font-size:
+                clamp(15px, 1.2vw, 23px);
+
+            font-weight:
+                500;
+
+            padding:
+                4px;
+
+            color:
+                #555;
+
+            border-bottom:
+                1px solid var(--border);
+
+        }
+
+
+        /* ==================================================
+           STAFF CARD
+        ================================================== */
+
+        .staff-card {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                38px 30px 1fr;
+
+            min-height:
+                38px;
+
+            border-bottom:
+                1px solid #aaa;
+
+        }
+
+
+        .staff-card:last-child {
+
+            border-bottom:
+                none;
+
+        }
+
+
+        /* Position */
+
+        .position-code {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            color:
+                white;
+
+            font-weight:
+                500;
+
+            font-size:
+                clamp(12px, 1vw, 18px);
+
+            border-right:
+                1px solid white;
+
+        }
+
+
+        /* Photo */
+
+        .staff-photo {
+
+            background:
+                #d7d7d7;
+
+            border-right:
+                1px solid white;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            overflow:
+                hidden;
+
+        }
+
+
+        .staff-photo img {
+
+            width:
+                100%;
+
+            height:
+                100%;
+
+            object-fit:
+                cover;
+
+        }
+
+
+        /* Placeholder initials */
+
+        .photo-placeholder {
+
+            width:
+                28px;
+
+            height:
+                28px;
+
+            border-radius:
+                50%;
+
+            background:
+                rgba(255,255,255,0.5);
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            font-size:
+                10px;
+
+            color:
+                #555;
+
+            font-weight:
+                bold;
+
+        }
+
+
+        /* Staff information */
+
+        .staff-details {
+
+            color:
+                white;
+
+            padding:
+                3px 7px;
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            justify-content:
+                center;
+
+            min-width:
+                0;
+
+        }
+
+
+        .staff-name {
+
+            font-size:
+                clamp(10px, 0.9vw, 15px);
+
+            font-weight:
+                bold;
+
+            white-space:
+                nowrap;
+
+            overflow:
+                hidden;
+
+            text-overflow:
+                ellipsis;
+
+        }
+
+
+        .staff-role {
+
+            font-size:
+                clamp(8px, 0.7vw, 11px);
+
+            margin-top:
+                2px;
+
+            opacity:
+                0.95;
+
+        }
+
+
+        .staff-phone {
+
+            font-size:
+                clamp(8px, 0.65vw, 10px);
+
+            margin-top:
+                1px;
+
+            opacity:
+                0.85;
+
+            white-space:
+                nowrap;
+
+            overflow:
+                hidden;
+
+            text-overflow:
+                ellipsis;
+
+        }
+
+
+        /* ==================================================
+           SHIFT A STAFF COLOUR
+        ================================================== */
+
+        .card-a .position-code,
+        .card-a .staff-details {
+
+            background:
+                var(--shift-a);
+
+        }
+
+
+        /* ==================================================
+           SHIFT B STAFF COLOUR
+        ================================================== */
+
+        .card-b .position-code,
+        .card-b .staff-details {
+
+            background:
+                var(--shift-b);
+
+        }
+
+
+        /* ==================================================
+           SHIFT C STAFF COLOUR
+        ================================================== */
+
+        .card-c .position-code,
+        .card-c .staff-details {
+
+            background:
+                var(--shift-c);
+
+        }
+
+
+        /* ==================================================
+           SHIFT D STAFF COLOUR
+        ================================================== */
+
+        .card-d .position-code,
+        .card-d .staff-details {
+
+            background:
+                var(--shift-d);
+
+        }
+
+
+        /* ==================================================
+           EMPTY STAFF SLOT
+        ================================================== */
+
+        .empty-slot {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                38px 1fr;
+
+            min-height:
+                38px;
+
+            border-bottom:
+                1px solid #aaa;
+
+        }
+
+
+        .empty-position {
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            color:
+                #777;
+
+            background:
+                #eeeeee;
+
+            border-right:
+                1px solid #aaa;
+
+            font-size:
+                12px;
+
+        }
+
+
+        .empty-space {
+
+            background:
+                white;
+
+        }
+
+
+        /* ==================================================
+           MECHANICS
+        ================================================== */
+
+        .line-pairing {
+
+            margin-bottom:
+                0;
+
+        }
+
+
+        .line-machines {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                75px 1fr;
+
+            border-bottom:
+                1px solid var(--light-border);
+
+        }
+
+
+        .machine-labels {
+
+            border-right:
+                1px solid var(--border);
+
+            background:
+                #f3f3f3;
+
+        }
+
+
+        .machine-label {
+
+            min-height:
+                37px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                center;
+
+            border-bottom:
+                1px solid var(--light-border);
+
+            font-size:
+                11px;
+
+            color:
+                #666;
+
+        }
+
+
+        .machine-label:last-child {
+
+            border-bottom:
+                none;
+
+        }
+
+
+        .mechanic-staff {
+
+            padding:
+                4px;
+
+        }
+
+
+        /* ==================================================
+           SINGLE STAFF ROW
+        ================================================== */
+
+        .single-staff-row {
+
+            padding:
+                6px;
+
+            background:
+                white;
+
+        }
+
+
+        /* ==================================================
+           FILTER MAKERS
+        ================================================== */
+
+        .filter-maker {
+
+            padding:
+                7px;
+
+            background:
+                #f7f7f7;
+
+        }
+
+
+        /* ==================================================
+           ELECTRICIANS
+        ================================================== */
+
+        .electrician-area {
+
+            padding:
+                7px;
+
+            background:
+                #f7f7f7;
+
+        }
+
+
+        /* ==================================================
+           STATUS SECTIONS
+        ================================================== */
+
+        .status-grid {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(2, 1fr);
+
+            gap:
+                0;
+
+        }
+
+
+        .status-section {
+
+            border-right:
+                1px solid var(--border);
+
+            border-bottom:
+                1px solid var(--border);
+
+            min-height:
+                115px;
+
+        }
+
+
+        .status-section:nth-child(even) {
+
+            border-right:
+                none;
+
+        }
+
+
+        .status-title {
+
+            text-align:
+                center;
+
+            padding:
+                5px;
+
+            font-size:
+                11px;
+
+            font-weight:
+                bold;
+
+            color:
+                #444;
+
+            background:
+                #eeeeee;
+
+            border-bottom:
+                1px solid var(--border);
+
+        }
+
+
+        .status-vacation {
+
+            border-top:
+                5px solid var(--vacation);
+
+        }
+
+
+        .status-sick {
+
+            border-top:
+                5px solid var(--sick-leave);
+
+        }
+
+
+        .status-family {
+
+            border-top:
+                5px solid var(--family-leave);
+
+        }
+
+
+        .status-others {
+
+            border-top:
+                5px solid var(--others);
+
+        }
+
+
+        .status-permission {
+
+            grid-column:
+                1 / -1;
+
+            border-top:
+                5px solid var(--permission);
+
+        }
+
+
+        .status-content {
+
+            padding:
+                5px;
+
+        }
+
+
+        /* ==================================================
+           SIMPLE STATUS STAFF CARD
+        ================================================== */
+
+        .status-person {
+
+            background:
+                var(--dark-section);
+
+            color:
+                white;
+
+            padding:
+                5px;
+
+            margin-bottom:
+                4px;
+
+            font-size:
+                10px;
+
+        }
+
+
+        .status-person:last-child {
+
+            margin-bottom:
+                0;
+
+        }
+
+
+        .status-person small {
+
+            display:
+                block;
+
+            opacity:
+                0.8;
+
+            margin-top:
+                2px;
+
+        }
+
+
+        /* ==================================================
+           BOTTOM SHIFT LABEL
+        ================================================== */
+
+        .bottom-shift-label {
+
+            text-align:
+                center;
+
+            color:
+                white;
+
+            padding:
+                8px;
+
+            margin-top:
+                auto;
+
+            font-size:
+                12px;
+
+            letter-spacing:
+                1px;
+
+        }
+
+
+        /* ==================================================
+           FOOTER
+        ================================================== */
+
+        .board-footer {
+
+            background:
+                white;
+
+            border-top:
+                1px solid var(--border);
+
+            padding:
+                10px;
+
+            text-align:
+                center;
+
+            font-size:
+                13px;
+
+            letter-spacing:
+                1px;
+
+            color:
+                #666;
+
+        }
+
+
+        /* ==================================================
+           RESPONSIVE TABLET
+        ================================================== */
+
+        @media screen and (max-width: 1300px) {
+
+            .roster-board {
+
+                grid-template-columns:
+                    repeat(2, minmax(350px, 1fr));
+
+            }
+
+
+            .shift-column {
+
+                border-bottom:
+                    2px solid var(--border);
+
+            }
+
+        }
+
+
+        /* ==================================================
+           RESPONSIVE MOBILE
+        ================================================== */
+
+        @media screen and (max-width: 750px) {
+
+            .board-header {
+
+                flex-direction:
+                    column;
+
+                gap:
+                    10px;
+
+            }
+
+
+            .roster-board {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+
+            .shift-column {
+
+                border-right:
+                    none;
+
+            }
+
+
+            .machine-grid {
+
+                grid-template-columns:
+                    1fr;
+
+            }
+
+        }
+
+
+        /* ==================================================
+           PRINT / LARGE DISPLAY
+        ================================================== */
+
+        @media print {
+
+            .fullscreen-button {
+
+                display:
+                    none;
+
+            }
+
+
+            body {
+
+                background:
+                    white;
+
+            }
+
+        }
+
+
+        /* ==================================================
+           ADDITIONS — dynamic board, auth, admin
+           (appended without touching the design above)
+        ================================================== */
+
+        :root {
+            --accent: #cfa23e;
+            --ok: #3d7a4d;
+            --danger: #a8433a;
+        }
+
+        .live-clock {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: clamp(20px, 2.2vw, 34px);
+            font-weight: bold;
+            color: #333;
+            letter-spacing: 1px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .conn-status {
+            background: #fdecea;
+            color: #a8433a;
+            text-align: center;
+            padding: 8px 16px;
+            font-size: 12.5px;
+            border-bottom: 1px solid #f0c4bf;
+        }
+
+        /* ---- shift status bar (MORNING/NIGHT + ON DUTY/STANDBY, or OFF), sits above the coloured shift-name band ---- */
+        .shift-status-bar {
+            background: #dcdcdc;
+            color: #555;
+            text-align: center;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            padding: 4px;
+        }
+        .shift-status-bar.is-now {
+            background: var(--accent);
+            color: #2b2b2b;
+        }
+        .shift-column.active-now {
+            box-shadow: inset 0 0 0 4px var(--accent);
+        }
+
+        /* ---- Line Pairing rows: label + staff-cell locked into ONE grid row each,
+               so a wrapped/2-line name can never push the label out of alignment ---- */
+        .line-pairing-grid { border-bottom: 1px solid var(--light-border); }
+        .lp-row { display: grid; grid-template-columns: 60px 1fr; border-bottom: 1px solid var(--light-border); align-items: stretch; }
+        .lp-row:last-child { border-bottom: none; }
+        .lp-row .machine-label {
+            display: flex; align-items: center; justify-content: center;
+            border-right: 1px solid var(--border); background: #f3f3f3;
+            font-size: 11px; color: #666; padding: 4px;
+        }
+        .lp-row .lp-staff-cell { min-width: 0; }
+        .lp-row .lp-staff-cell .staff-card,
+        .lp-row .lp-staff-cell .empty-slot { border-bottom: none; min-height: 37px; }
+
+        /* ---- single-row sections (FM03 & FM04) ---- */
+        .single-staff-row .staff-card,
+        .single-staff-row .empty-slot {
+            border-bottom: none;
+        }
+
+        /* ---- empty state re-used across mechanics / filter makers / electricians ---- */
+        .filter-maker .empty-slot,
+        .electrician-area .empty-slot {
+            border-bottom: none;
+        }
+
+        /* ---- top-level view switching ---- */
+        .roster-board { display: none; }
+        .roster-board.active { display: grid; }
+
+        .app-view {
+            display: none;
+            padding: 26px 24px 50px;
+            max-width: 1100px;
+            margin: 0 auto;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .app-view.active { display: block; }
+
+        .nav-btn {
+            background: var(--dark-section);
+            color: #fff;
+            border: none;
+            padding: 9px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .nav-btn:hover { opacity: .88; }
+        .nav-btn.accent { background: var(--accent); color: #2b2b2b; font-weight: bold; }
+
+        .app-card {
+            background: #fff;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 22px;
+        }
+        .app-login-wrap { max-width: 400px; margin: 30px auto; }
+        .app-field { margin-bottom: 14px; }
+        .app-field label { display: block; font-size: 12.5px; font-weight: bold; color: #666; margin-bottom: 5px; }
+        .app-field input, .app-field select, .app-field textarea {
+            width: 100%; padding: 9px 11px; border: 1px solid var(--light-border); border-radius: 4px; background: #fff; font-size: 14px;
+        }
+        .app-btn {
+            background: var(--dark-section); color: #fff; border: none; padding: 10px 18px;
+            border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13.5px;
+        }
+        .app-btn:hover { opacity: .9; }
+        .app-btn.secondary { background: transparent; color: #333; border: 1px solid var(--border); }
+        .app-msg { font-size: 13px; padding: 9px 12px; border-radius: 4px; margin-bottom: 12px; }
+        .app-msg.error { background: #fbeceb; color: var(--danger); }
+        .app-msg.ok { background: #eaf3ec; color: var(--ok); }
+
+        .app-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+        .app-tabs button {
+            border: 1px solid var(--border); background: #fff; padding: 8px 16px; border-radius: 4px;
+            cursor: pointer; font-weight: bold; font-size: 13px; color: #666;
+        }
+        .app-tabs button.active { background: var(--dark-section); color: #fff; border-color: var(--dark-section); }
+
+        table.app-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        table.app-table th, table.app-table td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--light-border); }
+        table.app-table th { color: #666; font-weight: bold; font-size: 12px; text-transform: uppercase; letter-spacing: .3px; }
+
+        .app-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+        @media (max-width: 800px) { .app-grid-2 { grid-template-columns: 1fr; } }
+
+        .admin-tab-panel { display: none; }
+        .admin-tab-panel.active { display: block; }
+    </style>
+
+</head>
+
+
+<body>
+
+    <!-- ================================================
+         BOARD HEADER
+    ================================================= -->
+
+    <header class="board-header">
+
+        <div class="brand-logo-wrap">
+            <div class="brand-logo-container">
+                <div class="brand-logo">
+                    <div class="brand-t-top"></div>
+                    <div class="brand-t-body"></div>
+                    <div class="brand-c1"></div>
+                    <div class="brand-c2"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="board-title">
+            <h1>MAKE PACK SHIFT ROSTER</h1>
+        </div>
+
+        <div id="liveClock" class="live-clock">--:--:--</div>
+
+        <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+
+            <div id="navAuth" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+
+            <button
+                class="fullscreen-button"
+                onclick="toggleFullscreen()">
+
+                FULL SCREEN
+
+            </button>
+
+        </div>
+
+    </header>
+
+    <div id="connStatus" class="conn-status" style="display:none;"></div>
+
+    <!-- ================================================
+         MAIN ROSTER BOARD (public, no login needed)
+    ================================================= -->
+
+    <main class="roster-board active" id="rosterBoard"></main>
+
+
+    <!-- ================================================
+         LOGIN
+    ================================================= -->
+
+    <main id="view-login" class="app-view">
+        <div class="app-login-wrap app-card">
+            <h2 style="margin-bottom:4px;">Sign in</h2>
+            <p style="color:#777;font-size:13px;margin-top:0;margin-bottom:18px;">
+                Staff and admin accounts share this form. New staff: use "Create account" with the email your admin registered for you.
+            </p>
+            <div id="loginMsg"></div>
+            <div class="app-field"><label>Email</label><input type="email" id="loginEmail" placeholder="you@tcc.co.tz"></div>
+            <div class="app-field"><label>Password</label><input type="password" id="loginPassword" placeholder="********"></div>
+            <div style="display:flex; gap:10px;">
+                <button class="app-btn" onclick="Auth.signIn()">Sign in</button>
+                <button class="app-btn secondary" onclick="Auth.signUp()">Create account</button>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- ================================================
+         STAFF DASHBOARD
+    ================================================= -->
+
+    <main id="view-staff" class="app-view">
+        <h2 style="margin-bottom:16px;">My Duty</h2>
+        <div id="myDutyCard" class="app-card" style="margin-bottom:24px;"></div>
+
+        <h3 style="margin-bottom:10px;">Full Roster</h3>
+        <div class="app-tabs" id="staffTeamTabs"></div>
+        <div id="staffRosterBody"></div>
+
+        <h3 style="margin:26px 0 10px;">Request Leave</h3>
+        <div class="app-card" style="max-width:480px;">
+            <div id="leaveReqMsg"></div>
+            <div class="app-field"><label>Type</label>
+                <select id="leaveType">
+                    <option value="vacation">Vacation</option>
+                    <option value="sick">Sick</option>
+                    <option value="family">Family</option>
+                    <option value="permission">Permission / Other</option>
+                </select>
+            </div>
+            <div class="app-grid-2">
+                <div class="app-field"><label>Start date</label><input type="date" id="leaveStart"></div>
+                <div class="app-field"><label>End date</label><input type="date" id="leaveEnd"></div>
+            </div>
+            <div class="app-field"><label>Note (optional)</label><textarea id="leaveNote" rows="2"></textarea></div>
+            <button class="app-btn" onclick="StaffView.submitLeave()">Submit request</button>
+        </div>
+    </main>
+
+
+    <!-- ================================================
+         ADMIN PANEL
+    ================================================= -->
+
+    <main id="view-admin" class="app-view">
+        <h2 style="margin-bottom:16px;">Admin Panel</h2>
+        <div class="app-tabs">
+            <button class="tab-btn active" data-atab="assign" onclick="AdminView.switchTab('assign')">Assignments</button>
+            <button class="tab-btn" data-atab="staff" onclick="AdminView.switchTab('staff')">Staff Directory</button>
+            <button class="tab-btn" data-atab="leave" onclick="AdminView.switchTab('leave')">Leave &amp; Reserve</button>
+            <button class="tab-btn" data-atab="rotation" onclick="AdminView.switchTab('rotation')">Rotation Settings</button>
+        </div>
+
+        <div id="admin-assign" class="admin-tab-panel active">
+            <div class="app-tabs" id="adminTeamTabs"></div>
+            <div id="adminAssignBody"></div>
+        </div>
+
+        <div id="admin-staff" class="admin-tab-panel">
+            <div class="app-card" style="margin-bottom:18px;">
+                <h3 style="margin-bottom:12px;">Add staff member</h3>
+                <div id="addStaffMsg"></div>
+                <div class="app-grid-2">
+                    <div class="app-field"><label>Full name</label><input id="newStaffName"></div>
+                    <div class="app-field"><label>Email (must match what they'll sign up with)</label><input id="newStaffEmail" type="email"></div>
+                    <div class="app-field"><label>Job title</label><input id="newStaffTitle"></div>
+                    <div class="app-field"><label>Role code</label>
+                        <select id="newStaffRole">
+                            <option value="MO">MO &mdash; Maker Operator</option>
+                            <option value="PO">PO &mdash; Packer Operator</option>
+                            <option value="MM">MM &mdash; Maker Mechanic</option>
+                            <option value="PM">PM &mdash; Packer Mechanic</option>
+                            <option value="ET">ET &mdash; Electrician</option>
+                            <option value="OTHER">Other / Reserve</option>
+                        </select>
+                    </div>
+                    <div class="app-field"><label>Phone</label><input id="newStaffPhone"></div>
+                    <div class="app-field"><label>Photo</label><input id="newStaffPhoto" type="file" accept="image/*"></div>
+                    <div class="app-field"><label>&nbsp;</label><label style="font-weight:normal;"><input type="checkbox" id="newStaffAdmin"> Is admin</label></div>
+                </div>
+                <button class="app-btn" onclick="AdminView.addStaff()">Add staff member</button>
+            </div>
+
+            <div class="app-card" style="margin-bottom:18px;">
+                <h3 style="margin-bottom:8px;">Bulk import staff</h3>
+                <p style="font-size:13px;color:#777;margin-top:0;">
+                    Paste rows copied from Excel/Sheets, or upload a .csv file. One staff member per line, columns
+                    in this order: <b>Full name, Email, Job title, Role code, Phone</b>. Role code must be one of
+                    MO, PO, MM, PM, ET, OTHER &mdash; a header row is optional and auto-skipped. Photos aren't part
+                    of bulk import; add those individually above afterward if needed.
+                </p>
+                <div id="bulkImportMsg"></div>
+                <div class="app-field">
+                    <label>Upload .csv file (optional &mdash; fills the box below)</label>
+                    <input type="file" id="bulkStaffFile" accept=".csv,text/csv" onchange="AdminView.loadBulkFile(event)">
+                </div>
+                <div class="app-field">
+                    <label>Staff rows</label>
+                    <textarea id="bulkStaffText" rows="6" placeholder="Jane Doe, jane@tcc.co.tz, Maker Operator, MO, 0712345678
+John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
+                </div>
+                <button class="app-btn" onclick="AdminView.bulkImportStaff()">Import staff</button>
+            </div>
+
+            <div class="app-card" style="margin-bottom:18px; border-color:var(--accent);">
+                <h3 style="margin-bottom:8px;">Auto-generate duty roster</h3>
+                <p style="font-size:13px;color:#777;margin-top:0;">
+                    Fills every slot on every shift automatically from the staff pool below, matched by
+                    position (MO/PO/MM/PM/ET/Other) and spread evenly across Shifts A&ndash;D.
+                    This <b>replaces</b> whatever is currently assigned &mdash; you can still fine-tune
+                    individual slots afterward in the Assignments tab.
+                </p>
+                <button class="app-btn" style="background:var(--accent); color:#2b2b2b;" onclick="AdminView.autoGenerate()">Auto-generate roster</button>
+                <div id="autoGenMsg" style="margin-top:10px;"></div>
+            </div>
+
+            <div id="staffDirectory"></div>
+        </div>
+
+        <div id="admin-leave" class="admin-tab-panel">
+            <div class="app-card" style="margin-bottom:18px; max-width:560px;">
+                <h3 style="margin-bottom:12px;">Add leave record</h3>
+                <div id="addLeaveMsg"></div>
+                <div class="app-field"><label>Staff</label><select id="adminLeaveStaff"></select></div>
+                <div class="app-grid-2">
+                    <div class="app-field"><label>Type</label>
+                        <select id="adminLeaveType">
+                            <option value="vacation">Vacation</option>
+                            <option value="sick">Sick</option>
+                            <option value="family">Family</option>
+                            <option value="permission">Permission / Other</option>
+                        </select>
+                    </div>
+                    <div class="app-field"><label>Status</label>
+                        <select id="adminLeaveStatus">
+                            <option value="approved">Approved</option>
+                            <option value="pending">Pending</option>
+                        </select>
+                    </div>
+                    <div class="app-field"><label>Start date</label><input type="date" id="adminLeaveStart"></div>
+                    <div class="app-field"><label>End date</label><input type="date" id="adminLeaveEnd"></div>
+                </div>
+                <div class="app-field"><label>Note (optional)</label><input id="adminLeaveNote"></div>
+                <button class="app-btn" onclick="AdminView.addLeaveRecord()">Add leave record</button>
+            </div>
+            <div id="leaveAdminBody"></div>
+        </div>
+
+        <div id="admin-rotation" class="admin-tab-panel">
+            <div class="app-card" style="max-width:480px; margin-bottom:18px;">
+                <h3 style="margin-bottom:12px;">Rotation cycle</h3>
+                <p style="font-size:13px;color:#777;">Pattern: each team runs DAY &rarr; NIGHT &rarr; OFF &rarr; OFF, staggered by one day, so exactly one team is on Day and one on Night at any time.</p>
+                <div class="app-field"><label>Cycle start date</label><input type="date" id="cycleStartInput"></div>
+                <button class="app-btn" onclick="AdminView.saveRotation()">Save</button>
+                <div id="rotationMsg" style="margin-top:10px;"></div>
+            </div>
+            <div class="app-card" style="max-width:480px;">
+                <h3 style="margin-bottom:12px;">Accountable person per shift</h3>
+                <div class="app-field"><label>Shift A</label><input id="accA"></div>
+                <div class="app-field"><label>Shift B</label><input id="accB"></div>
+                <div class="app-field"><label>Shift C</label><input id="accC"></div>
+                <div class="app-field"><label>Shift D</label><input id="accD"></div>
+                <button class="app-btn" onclick="AdminView.saveAccountable()">Save</button>
+                <div id="accountableMsg" style="margin-top:10px;"></div>
+            </div>
+        </div>
+    </main>
+
+
+    <!-- ================================================
+         FOOTER
+    ================================================= -->
+
+    <footer class="board-footer">
+
+        THE RESPONSIBLE PERSON TO UPDATE THIS BOARD
+
+    </footer>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+
+    <!-- ================================================
+         JAVASCRIPT
+    ================================================= -->
+
+    <script>
+
+        /* ============================================================
+           CONFIG — paste your real Supabase + Cloudinary values here.
+           Run tcc_schema.sql in your Supabase SQL editor first.
+           ============================================================ */
+        const CONFIG = {
+            SUPABASE_URL: 'https://xfenepdrtqkqxqicqukh.supabase.co',
+            SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmZW5lcGRydHFrcXhxaWNxdWtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNjk2NDgsImV4cCI6MjA4OTY0NTY0OH0.4fSCyY7TxTfJN3T-43eesTK8YUG2hUyBS97BeiUUTJE',
+            CLOUDINARY_CLOUD_NAME: 'YOUR-CLOUD-NAME',
+            CLOUDINARY_UPLOAD_PRESET: 'YOUR-UNSIGNED-PRESET',
+            DAY_SHIFT_START: '08:00',
+            NIGHT_SHIFT_START: '18:01',
+        };
+
+        // Only staff with an official TCC email may create an account.
+        const ALLOWED_EMAIL_DOMAIN = '@tcc.co.tz';
+
+        /* ============================================================
+           TIME ZONE — the board always reflects the plant's local time
+           (East Africa Time, UTC+3, no DST) regardless of where a viewer's
+           browser/device is physically located or set to. This matters
+           once the board is viewable online from anywhere: a viewer's own
+           device clock/timezone must never affect which shift shows as
+           active. Use these two helpers anywhere "now" drives shift logic
+           or on-screen date/time — never call new Date() methods directly
+           for that purpose.
+           ============================================================ */
+        const TCC_TIMEZONE = 'Africa/Dar_es_Salaam'; // EAT, UTC+3 year-round
+
+        function eatDateString(date = new Date()){
+            // yyyy-mm-dd in EAT, independent of the viewer's local timezone
+            return new Intl.DateTimeFormat('en-CA', {
+                timeZone: TCC_TIMEZONE, year: 'numeric', month: '2-digit', day: '2-digit'
+            }).format(date);
+        }
+
+        function eatTimeString(date = new Date()){
+            // HH:MM (24h) in EAT, independent of the viewer's local timezone
+            return new Intl.DateTimeFormat('en-GB', {
+                timeZone: TCC_TIMEZONE, hour: '2-digit', minute: '2-digit', hour12: false
+            }).format(date);
+        }
+
+        let sb = null;
+        if (window.supabase) {
+            sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+        } else {
+            console.error('Supabase JS failed to load — check your internet connection.');
+        }
+
+        /* ============================================================
+           SLOT TEMPLATE — mirrors this exact board's sections.
+           (Single electrician per shift, "Others" = reserve/backup staff
+           shown in the bottom status grid.) This list must stay in sync
+           with the assignment_slots seed data in tcc_schema.sql.
+           ============================================================ */
+        const SLOT_TEMPLATE = [
+            {id:'fm', section:'fm', label:'FM03 & FM04', role_code:'MO', sort_order:0},
+            {id:'mp22mo', section:'operators', machine:'MP22', label:'MP22', role_code:'MO', sort_order:1},
+            {id:'mp22po', section:'operators', machine:'MP22', label:'MP22', role_code:'PO', sort_order:2},
+            {id:'mp23mo', section:'operators', machine:'MP23', label:'MP23', role_code:'MO', sort_order:3},
+            {id:'mp23po', section:'operators', machine:'MP23', label:'MP23', role_code:'PO', sort_order:4},
+            {id:'mp26mo', section:'operators', machine:'MP26', label:'MP26', role_code:'MO', sort_order:5},
+            {id:'mp26po', section:'operators', machine:'MP26', label:'MP26', role_code:'PO', sort_order:6},
+            {id:'mp28mo', section:'operators', machine:'MP28', label:'MP28', role_code:'MO', sort_order:7},
+            {id:'mp28po', section:'operators', machine:'MP28', label:'MP28', role_code:'PO', sort_order:8},
+            {id:'mp29mo', section:'operators', machine:'MP29', label:'MP29', role_code:'MO', sort_order:9},
+            {id:'mp29po', section:'operators', machine:'MP29', label:'MP29', role_code:'PO', sort_order:10},
+            {id:'mp30mo', section:'operators', machine:'MP30', label:'MP30', role_code:'MO', sort_order:11},
+            {id:'mp30po', section:'operators', machine:'MP30', label:'MP30', role_code:'PO', sort_order:12},
+            {id:'lp1mm', section:'mechanics', pairing:'LINE PAIRING 1', machines:['MP26','MP28'], label:'Line Pairing 1', role_code:'MM', sort_order:13},
+            {id:'lp1pm', section:'mechanics', pairing:'LINE PAIRING 1', machines:['MP26','MP28'], label:'Line Pairing 1', role_code:'PM', sort_order:14},
+            {id:'lp2mm', section:'mechanics', pairing:'LINE PAIRING 2', machines:['MP22','MP23'], label:'Line Pairing 2', role_code:'MM', sort_order:15},
+            {id:'lp2pm', section:'mechanics', pairing:'LINE PAIRING 2', machines:['MP22','MP23'], label:'Line Pairing 2', role_code:'PM', sort_order:16},
+            {id:'lp3mm', section:'mechanics', pairing:'LINE PAIRING 3', machines:['MP29','MP30'], label:'Line Pairing 3', role_code:'MM', sort_order:17},
+            {id:'lp3pm', section:'mechanics', pairing:'LINE PAIRING 3', machines:['MP29','MP30'], label:'Line Pairing 3', role_code:'PM', sort_order:18},
+            {id:'filt', section:'filter_makers', label:'Filter Maker', role_code:'MM', sort_order:19},
+            {id:'elec', section:'electricians', label:'Electrician', role_code:'ET', sort_order:20},
+            {id:'oth1', section:'others', label:'Reserve / Backup 1', role_code:'OTHER', sort_order:21},
+            {id:'oth2', section:'others', label:'Reserve / Backup 2', role_code:'OTHER', sort_order:22},
+        ];
+
+        const SHIFT_LETTERS = ['A','B','C','D'];
+        const ROLE_LABELS = { MO:'Maker Operator', PO:'Packer Operator', MM:'Maker Mechanic', PM:'Packer Mechanic', ET:'Electrician' };
+
+        /* ============================================================
+           DATA ACCESS LAYER — talks to Supabase directly.
+           Read methods never throw: if Supabase is unreachable or not
+           configured yet, they log the error, flag `connectionOk = false`,
+           and return an empty/safe fallback so the board still renders its
+           full structure (all slots, just unassigned) instead of going
+           blank. Write methods (add/save/set...) still throw on failure,
+           so the admin gets a clear error instead of a silent no-op.
+           ============================================================ */
+        let connectionOk = true;
+        let lastConnectionError = '';
+
+        function withTimeout(promise, ms){
+            return Promise.race([
+                promise,
+                new Promise((_, reject)=> setTimeout(()=> reject(new Error('Request timed out after '+(ms/1000)+'s — check SUPABASE_URL / your internet connection')), ms))
+            ]);
+        }
+
+        async function safeRead(fn, fallback){
+            try {
+                const result = await withTimeout(fn(), 8000);
+                connectionOk = true;
+                return result;
+            } catch (e){
+                console.error('Supabase read failed:', e);
+                connectionOk = false;
+                lastConnectionError = (e && e.message) ? e.message : String(e);
+                return fallback;
+            }
+        }
+
+        const DB = {
+            async getSlots(){ return SLOT_TEMPLATE; },
+            async getStaff(){
+                return safeRead(async ()=>{
+                    const { data, error } = await sb.from('staff').select('*').order('full_name');
+                    if (error) throw error; return data;
+                }, []);
+            },
+            async getAssignments(teamLetter){
+                return safeRead(async ()=>{
+                    const { data: team } = await sb.from('shift_teams').select('id').eq('letter', teamLetter).single();
+                    if (!team) return [];
+                    const { data, error } = await sb.from('assignments').select('*, staff(*)').eq('shift_team_id', team.id);
+                    if (error) throw error;
+                    return data.map(a=>({shift_team:teamLetter, slot_id:a.slot_id, staff_id:a.staff_id, is_team_leader:a.is_team_leader, staff:a.staff}));
+                }, []);
+            },
+            async getRotationStart(){
+                return safeRead(async ()=>{
+                    const { data, error } = await sb.from('rotation_config').select('cycle_start_date').eq('id',1).single();
+                    if (error) throw error; return data.cycle_start_date;
+                }, eatDateString());
+            },
+            async saveRotationStart(dateStr){
+                const { error } = await sb.from('rotation_config').update({cycle_start_date:dateStr}).eq('id',1);
+                if (error) throw error;
+            },
+            async getAccountablePersons(){
+                return safeRead(async ()=>{
+                    const { data, error } = await sb.from('shift_teams').select('letter, accountable_person');
+                    if (error) throw error;
+                    const map = {};
+                    (data||[]).forEach(r=>{ map[r.letter] = r.accountable_person || ''; });
+                    return map;
+                }, {});
+            },
+            async saveAccountablePerson(teamLetter, name){
+                const { error } = await sb.from('shift_teams').update({ accountable_person: name }).eq('letter', teamLetter);
+                if (error) throw error;
+            },
+            async getLeave(){
+                return safeRead(async ()=>{
+                    const { data, error } = await sb.from('leave_records').select('*, staff(full_name)').order('start_date');
+                    if (error) throw error; return data;
+                }, []);
+            },
+            async addLeave(rec){
+                const { error } = await sb.from('leave_records').insert(rec);
+                if (error) throw error;
+            },
+            async updateLeaveStatus(id, status){
+                const { error } = await sb.from('leave_records').update({ status }).eq('id', id);
+                if (error) throw error;
+            },
+            async addStaff(rec){
+                const { data, error } = await sb.from('staff').insert(rec).select().single();
+                if (error) throw error; return data;
+            },
+            async autoGenerateRoster(){
+                const { data: teams, error: teamsErr } = await sb.from('shift_teams').select('id, letter');
+                if (teamsErr) throw teamsErr;
+                const teamIdByLetter = {};
+                teams.forEach(t => teamIdByLetter[t.letter] = t.id);
+
+                const { data: staffList, error: staffErr } = await sb.from('staff').select('*').order('full_name');
+                if (staffErr) throw staffErr;
+
+                // Group non-admin staff by role_code (MO/PO/MM/PM/ET/OTHER), alphabetically for
+                // a stable, repeatable result each time this is run.
+                const byRole = {};
+                (staffList || []).filter(s => !s.is_admin).forEach(s => {
+                    const r = s.role_code || 'OTHER';
+                    (byRole[r] = byRole[r] || []).push(s);
+                });
+
+                const pointer = {};
+                const placedCount = {};
+                const neededCount = {};
+                const rows = [];
+
+                // Outer loop over slot *types* (not teams) so staff are spread evenly across
+                // Shifts A-D rather than filling Shift A completely before B gets anyone.
+                for (const slot of SLOT_TEMPLATE){
+                    const role = slot.role_code;
+                    for (const team of SHIFT_LETTERS){
+                        neededCount[role] = (neededCount[role] || 0) + 1;
+                        const queue = byRole[role] || [];
+                        const idx = pointer[role] || 0;
+                        if (idx < queue.length){
+                            pointer[role] = idx + 1;
+                            rows.push({ shift_team_id: teamIdByLetter[team], slot_id: slot.id, staff_id: queue[idx].id, is_team_leader: false });
+                            placedCount[role] = (placedCount[role] || 0) + 1;
+                        }
+                    }
+                }
+
+                const { error: delErr } = await sb.from('assignments').delete().not('id', 'is', null);
+                if (delErr) throw delErr;
+                if (rows.length){
+                    const { error: insErr } = await sb.from('assignments').insert(rows);
+                    if (insErr) throw insErr;
+                }
+
+                return { placedCount, neededCount, totalPlaced: rows.length, totalSlots: SLOT_TEMPLATE.length * SHIFT_LETTERS.length };
+            },
+            async setAssignment(teamLetter, slotId, staffId, isTeamLeader){
+                const { data: team } = await sb.from('shift_teams').select('id').eq('letter', teamLetter).single();
+                if (!staffId){
+                    await sb.from('assignments').delete().eq('shift_team_id', team.id).eq('slot_id', slotId);
+                    return;
+                }
+                const { error } = await sb.from('assignments').upsert(
+                    { shift_team_id: team.id, slot_id: slotId, staff_id: staffId, is_team_leader: !!isTeamLeader },
+                    { onConflict: 'shift_team_id,slot_id' }
+                );
+                if (error) throw error;
+            },
+            async uploadPhoto(file){
+                if (!file) return null;
+                const form = new FormData();
+                form.append('file', file);
+                form.append('upload_preset', CONFIG.CLOUDINARY_UPLOAD_PRESET);
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CONFIG.CLOUDINARY_CLOUD_NAME}/image/upload`, { method:'POST', body: form });
+                const json = await res.json();
+                if (!json.secure_url) throw new Error('Upload failed');
+                return json.secure_url;
+            }
+        };
+
+        /* ============================================================
+           ROTATION LOGIC — DAY -> NIGHT -> OFF -> OFF, staggered so
+           exactly one team is Day and one is Night on any given date.
+           ============================================================ */
+        function computeTeamStatus(dateStr, cycleStart){
+            const d = new Date(dateStr+'T00:00:00');
+            const s = new Date(cycleStart+'T00:00:00');
+            const diffDays = Math.floor((d - s) / 86400000);
+            let cycle = diffDays % 4; if (cycle < 0) cycle += 4;
+            // Every shift is buffered by an OFF day on both sides — nobody ever
+            // goes straight from a NIGHT shift into a MORNING shift (or back)
+            // on consecutive calendar days with zero rest between them.
+            const patterns = {
+                A: ['OFF','MORNING','OFF','NIGHT'],
+                B: ['NIGHT','OFF','MORNING','OFF'],
+                C: ['OFF','NIGHT','OFF','MORNING'],
+                D: ['MORNING','OFF','NIGHT','OFF'],
+            };
+            const result = {};
+            for (const team of SHIFT_LETTERS) result[team] = patterns[team][cycle];
+            return result;
+        }
+        function currentlyActiveWindow(){
+            const hhmm = eatTimeString();
+            if (hhmm >= CONFIG.DAY_SHIFT_START && hhmm < CONFIG.NIGHT_SHIFT_START) return 'MORNING';
+            return 'NIGHT';
+        }
+
+        /* ============================================================
+           AUTH — sign-up is restricted to @tcc.co.tz email addresses.
+           A new account only gains staff/admin access once its email
+           matches a staff row your admin already created.
+           ============================================================ */
+        let session = { user:null, staff:null };
+
+        const Auth = {
+            async signIn(){
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value;
+                const msg = document.getElementById('loginMsg');
+                msg.innerHTML = '';
+                if (!email || !password){ msg.innerHTML = '<div class="app-msg error">Enter email and password.</div>'; return; }
+                const { data, error } = await sb.auth.signInWithPassword({ email, password });
+                if (error){ msg.innerHTML = `<div class="app-msg error">${error.message}</div>`; return; }
+                await loadStaffProfile(data.user);
+                afterLogin();
+            },
+            async signUp(){
+                const email = document.getElementById('loginEmail').value.trim();
+                const password = document.getElementById('loginPassword').value;
+                const msg = document.getElementById('loginMsg');
+                msg.innerHTML = '';
+                if (!email || !password){ msg.innerHTML = '<div class="app-msg error">Enter email and password.</div>'; return; }
+                if (!email.toLowerCase().endsWith(ALLOWED_EMAIL_DOMAIN)){
+                    msg.innerHTML = `<div class="app-msg error">Only official TCC email addresses (${ALLOWED_EMAIL_DOMAIN}) can create an account.</div>`;
+                    return;
+                }
+                const { data, error } = await sb.auth.signUp({ email, password });
+                if (error){ msg.innerHTML = `<div class="app-msg error">${error.message}</div>`; return; }
+                const { data: staffRow } = await sb.from('staff').select('*').eq('email', email).single();
+                if (staffRow && !staffRow.auth_user_id){
+                    await sb.from('staff').update({ auth_user_id: data.user.id }).eq('id', staffRow.id);
+                }
+                if (!staffRow){
+                    msg.innerHTML = '<div class="app-msg error">That email isn\'t registered as staff yet. Ask your admin to add you in the Admin Panel first, then create your account.</div>';
+                    return;
+                }
+                msg.innerHTML = '<div class="app-msg ok">Account created. Check your email to confirm, then sign in.</div>';
+            },
+            async signOut(){
+                await sb.auth.signOut();
+                session = { user:null, staff:null };
+                renderNav();
+                showView('board');
+            }
+        };
+
+        async function loadStaffProfile(user){
+            const { data } = await sb.from('staff').select('*').eq('auth_user_id', user.id).single();
+            session = { user, staff: data || null };
+        }
+
+
+        function afterLogin(){
+            document.getElementById('loginMsg').innerHTML = '';
+            renderNav();
+            if (session.staff && session.staff.is_admin){ showView('admin'); AdminView.init(); }
+            else { showView('staff'); StaffView.init(); }
+        }
+
+        /* ============================================================
+           NAV / VIEW SWITCHING
+           ============================================================ */
+        function showView(name){
+            document.getElementById('rosterBoard').classList.toggle('active', name==='board');
+            document.querySelectorAll('.app-view').forEach(v=>v.classList.remove('active'));
+            if (name !== 'board') document.getElementById('view-'+name).classList.add('active');
+        }
+
+        function renderNav(){
+            const nav = document.getElementById('navAuth');
+            let html = `<button class="nav-btn" onclick="showView('board')">Duty Board</button>`;
+            if (!session.user){
+                html += `<button class="nav-btn accent" onclick="showView('login')">Sign in</button>`;
+            } else {
+                if (session.staff && session.staff.is_admin){
+                    html += `<button class="nav-btn accent" onclick="showView('admin'); AdminView.init();">Admin Panel</button>`;
+                } else {
+                    html += `<button class="nav-btn accent" onclick="showView('staff'); StaffView.init();">My Duty</button>`;
+                }
+                html += `<button class="nav-btn" onclick="Auth.signOut()">Log out (${session.staff ? session.staff.full_name : session.user.email})</button>`;
+            }
+            nav.innerHTML = html;
+            showView('board');
+        }
+
+        /* ============================================================
+           BOARD RENDERING — generates the exact markup/classes this
+           design already uses, driven by SLOT_TEMPLATE + assignments.
+           ============================================================ */
+        function findStaff(assignment, staffList){
+            if (!assignment) return null;
+            return staffList.find(s=>s.id===assignment.staff_id) || assignment.staff || null;
+        }
+
+        function initials(name){
+            return name.split(' ').filter(Boolean).slice(0,2).map(w=>w[0].toUpperCase()).join('');
+        }
+
+        function staffCardHtml(slot, staff, teamLetter, isTeamLeader, roleLabel){
+            const cardClass = 'card-' + teamLetter.toLowerCase();
+            const photo = staff && staff.photo_url
+                ? `<img src="${staff.photo_url}" alt="">`
+                : `<div class="photo-placeholder">${staff ? initials(staff.full_name) : slot.role_code}</div>`;
+            if (!staff){
+                return `<div class="empty-slot">
+                    <div class="empty-position">${slot.role_code}</div>
+                    <div class="empty-space"></div>
+                  </div>`;
+            }
+            return `<div class="staff-card ${cardClass}">
+                <div class="position-code">${slot.role_code}</div>
+                <div class="staff-photo">${photo}</div>
+                <div class="staff-details">
+                    <span class="staff-name">${staff.full_name}${isTeamLeader?' (TL)':''}</span>
+                    <span class="staff-role">${roleLabel || staff.job_title || ''}</span>
+                    ${staff.phone ? `<span class="staff-phone">${staff.phone}</span>` : ''}
+                </div>
+            </div>`;
+        }
+
+        function machineCardHtml(machine, slots, assignments, staffList, teamLetter){
+            const rows = slots.map(sl=>{
+                const a = assignments.find(x=>x.slot_id===sl.id);
+                const staff = findStaff(a, staffList);
+                return staffCardHtml(sl, staff, teamLetter, a && a.is_team_leader, ROLE_LABELS[sl.role_code]);
+            }).join('');
+            return `<div class="machine-card"><div class="machine-title">${machine}</div>${rows}</div>`;
+        }
+
+        function lineMachinesHtml(pairing, machines, slots, assignments, staffList, teamLetter){
+            // Each row pairs one machine label with its own staff cell in the SAME
+            // grid row, so a wrapped 2-line name can never drift the label out of sync.
+            const rows = slots.map((sl, i)=>{
+                const a = assignments.find(x=>x.slot_id===sl.id);
+                const staff = findStaff(a, staffList);
+                const card = staffCardHtml(sl, staff, teamLetter, a && a.is_team_leader, ROLE_LABELS[sl.role_code]);
+                const label = machines[i] || machines[machines.length-1];
+                return `<div class="lp-row">
+                    <div class="machine-label">${label}</div>
+                    <div class="lp-staff-cell">${card}</div>
+                </div>`;
+            }).join('');
+            return `<div class="section-header">${pairing}</div>
+                <div class="line-pairing-grid">${rows}</div>`;
+        }
+
+        function leaveContentHtml(leaveList, staffList, type, teamAssignments){
+            const today = eatDateString();
+            const teamStaffIds = new Set(teamAssignments.map(a=>a.staff_id).filter(Boolean));
+            const entries = leaveList.filter(l=>{
+                if (l.leave_type !== type) return false;
+                if (l.status && l.status !== 'approved') return false;
+                if (l.start_date > today) return false;
+                if (l.end_date && l.end_date < today) return false;
+                if (!teamStaffIds.has(l.staff_id)) return false; // only show on the person's own team
+                return true;
+            }).map(l=>{
+                const staff = staffList.find(s=>s.id===l.staff_id) || l.staff;
+                return staff ? `<div class="status-person">${staff.full_name}<small>${staff.job_title||''}</small></div>` : '';
+            }).join('');
+            return entries;
+        }
+
+        function reserveStaffHtml(teamLetter, assignments, staffList){
+            const reserveSlots = SLOT_TEMPLATE.filter(s=>s.section==='others');
+            const entries = reserveSlots.map(sl=>{
+                const a = assignments.find(x=>x.slot_id===sl.id);
+                const staff = findStaff(a, staffList);
+                return staff ? `<div class="status-person">${staff.full_name}<small>${staff.job_title||''}</small></div>` : '';
+            }).join('');
+            return entries;
+        }
+
+        function shiftColumnHtml(teamLetter, statusWord, isActiveNow, slots, staffList, accountable, assignments, leaveList){
+            const fmSlot = slots.find(s=>s.section==='fm');
+            const fmAssignment = assignments.find(x=>x.slot_id===fmSlot.id);
+            const fmStaff = findStaff(fmAssignment, staffList);
+            const fmHtml = `<div class="single-staff-row">${staffCardHtml(fmSlot, fmStaff, teamLetter, false, ROLE_LABELS['MO'])}</div>`;
+
+            const machineNames = ['MP22','MP23','MP26','MP28','MP29','MP30'];
+            const machinesHtml = machineNames.map(m=>{
+                const mSlots = slots.filter(s=>s.section==='operators' && s.machine===m);
+                return machineCardHtml(m, mSlots, assignments, staffList, teamLetter);
+            }).join('');
+
+            const pairings = [
+                {name:'LINE PAIRING 1', machines:['MP26','MP28']},
+                {name:'LINE PAIRING 2', machines:['MP22','MP23']},
+                {name:'LINE PAIRING 3', machines:['MP29','MP30']},
+            ];
+            const mechanicsHtml = pairings.map(p=>{
+                const pSlots = slots.filter(s=>s.section==='mechanics' && s.pairing===p.name);
+                return lineMachinesHtml(p.name, p.machines, pSlots, assignments, staffList, teamLetter);
+            }).join('');
+
+            const filterSlot = slots.find(s=>s.section==='filter_makers');
+            const filterA = assignments.find(x=>x.slot_id===filterSlot.id);
+            const filterStaff = findStaff(filterA, staffList);
+            const filterHtml = `<div class="filter-maker">${staffCardHtml(filterSlot, filterStaff, teamLetter, false, 'Filter Maker')}</div>`;
+
+            const elecSlot = slots.find(s=>s.section==='electricians');
+            const elecA = assignments.find(x=>x.slot_id===elecSlot.id);
+            const elecStaff = findStaff(elecA, staffList);
+            const elecHtml = `<div class="electrician-area">${staffCardHtml(elecSlot, elecStaff, teamLetter, false, 'Electrician')}</div>`;
+
+            const vac = leaveContentHtml(leaveList, staffList, 'vacation', assignments);
+            const sick = leaveContentHtml(leaveList, staffList, 'sick', assignments);
+            const fam = leaveContentHtml(leaveList, staffList, 'family', assignments);
+            const perm = leaveContentHtml(leaveList, staffList, 'permission', assignments);
+            const others = reserveStaffHtml(teamLetter, assignments, staffList);
+
+            const barLabel = statusWord === 'OFF'
+                ? 'OFF'
+                : `${statusWord} &mdash; ${isActiveNow ? 'ON DUTY' : 'STANDBY'}`;
+
+            return `<section class="shift-column ${isActiveNow?'active-now':''}">
+
+                <div class="shift-status-bar ${isActiveNow?'is-now':''}">${barLabel}</div>
+                <div class="shift-name shift-${teamLetter.toLowerCase()}">SHIFT ${teamLetter}</div>
+
+                <div class="section-header">OPERATORS</div>
+                <div class="sub-section-title">FM03 &amp; FM04</div>
+                ${fmHtml}
+
+                <div class="machine-grid">${machinesHtml}</div>
+
+                <div class="section-header">MECHANICS</div>
+                ${mechanicsHtml}
+
+                <div class="section-header">FILTER MAKERS</div>
+                ${filterHtml}
+
+                <div class="section-header">ELECTRICIANS</div>
+                ${elecHtml}
+
+                <div class="status-grid">
+                    <div class="status-section status-vacation">
+                        <div class="status-title">VACATION</div>
+                        <div class="status-content">${vac || ''}</div>
+                    </div>
+                    <div class="status-section status-sick">
+                        <div class="status-title">SICK LEAVE</div>
+                        <div class="status-content">${sick || ''}</div>
+                    </div>
+                    <div class="status-section status-family">
+                        <div class="status-title">FAMILY LEAVE</div>
+                        <div class="status-content">${fam || ''}</div>
+                    </div>
+                    <div class="status-section status-others">
+                        <div class="status-title">OTHERS</div>
+                        <div class="status-content">${others || ''}</div>
+                    </div>
+                    <div class="status-section status-permission">
+                        <div class="status-title">PERMISSION</div>
+                        <div class="status-content">${perm || ''}</div>
+                    </div>
+                </div>
+
+                <div class="bottom-shift-label shift-${teamLetter.toLowerCase()}">
+                    SHIFT ${teamLetter}${accountable ? `<br><small>Accountable: ${accountable}</small>` : ''}
+                </div>
+
+            </section>`;
+        }
+
+        async function renderBoard(){
+            try {
+                const today = eatDateString();
+                const slots = await DB.getSlots();
+
+                // Fetch everything up front, with each call individually
+                // fault-tolerant (safeRead + timeout). None of these throw.
+                const cycleStart = await DB.getRotationStart();
+                const staffList = await DB.getStaff();
+                const accountableMap = await DB.getAccountablePersons();
+                const leaveList = await DB.getLeave();
+                const assignmentsByTeam = {};
+                for (const team of SHIFT_LETTERS){
+                    assignmentsByTeam[team] = await DB.getAssignments(team);
+                }
+
+                const statuses = computeTeamStatus(today, cycleStart);
+                const activeWindow = currentlyActiveWindow();
+
+                // From here on everything is a pure, synchronous string-building
+                // step over plain data already in hand — it cannot hang or throw
+                // due to network/Supabase issues.
+                let html = '';
+                for (const team of SHIFT_LETTERS){
+                    const statusWord = statuses[team];
+                    const isActiveNow = statusWord === activeWindow;
+                    html += shiftColumnHtml(team, statusWord, isActiveNow, slots, staffList,
+                        accountableMap[team] || '', assignmentsByTeam[team], leaveList);
+                }
+                document.getElementById('rosterBoard').innerHTML = html;
+            } catch (e){
+                // Last-resort safety net: something unexpected broke the render
+                // (a bug, not just "Supabase unreachable" — those are already
+                // handled above). Still show the full empty skeleton rather than
+                // a blank page, and surface the real error.
+                console.error('renderBoard failed unexpectedly:', e);
+                connectionOk = false;
+                lastConnectionError = (e && e.message) ? e.message : String(e);
+                try {
+                    const slots = SLOT_TEMPLATE;
+                    let html = '';
+                    for (const team of SHIFT_LETTERS){
+                        html += shiftColumnHtml(team, 'OFF', false, slots, [], '', [], []);
+                    }
+                    document.getElementById('rosterBoard').innerHTML = html;
+                } catch (e2){
+                    console.error('Fallback skeleton render also failed:', e2);
+                }
+            }
+            renderConnStatus();
+        }
+
+        function renderConnStatus(){
+            const el = document.getElementById('connStatus');
+            if (connectionOk){ el.style.display = 'none'; return; }
+            el.style.display = 'block';
+            el.textContent = 'Not connected to Supabase — the board below is showing its layout with no names yet. '
+                + 'Check SUPABASE_URL / SUPABASE_ANON_KEY in the CONFIG section of this file, and that tcc_schema.sql has been run.'
+                + (lastConnectionError ? ' (' + lastConnectionError + ')' : '');
+        }
+
+        function tickClock() {
+            const time = new Intl.DateTimeFormat('en-GB', {
+                timeZone: TCC_TIMEZONE, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+            }).format(new Date());
+            document.getElementById('liveClock').textContent = time;
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+            else document.exitFullscreen();
+        }
+
+        /* ============================================================
+           STAFF DASHBOARD
+           ============================================================ */
+        const StaffView = {
+            activeTeamTab: 'A',
+            async init(){
+                await this.renderMyDuty();
+                this.renderTabs();
+                await this.renderRoster('A');
+            },
+            async renderMyDuty(){
+                const el = document.getElementById('myDutyCard');
+                if (!session.staff){ el.innerHTML = `<div class="app-msg error">Your login isn't linked to a staff profile yet. Contact your admin.</div>`; return; }
+                const cycleStart = await DB.getRotationStart();
+                const today = eatDateString();
+                const statuses = computeTeamStatus(today, cycleStart);
+                let myTeam = null;
+                for (const t of SHIFT_LETTERS){
+                    const a = (await DB.getAssignments(t)).find(x=>x.staff_id===session.staff.id);
+                    if (a){ myTeam = t; break; }
+                }
+                if (!myTeam){ el.innerHTML = `Hi ${session.staff.full_name} &mdash; you're not yet assigned to a shift slot. Contact your admin.`; return; }
+                el.innerHTML = `Hi <b>${session.staff.full_name}</b> &mdash; you're on <b>Shift ${myTeam}</b>. Today's status: <b>${statuses[myTeam]}</b>`;
+            },
+            renderTabs(){
+                const el = document.getElementById('staffTeamTabs');
+                el.innerHTML = SHIFT_LETTERS.map(t=>
+                    `<button class="${t===this.activeTeamTab?'active':''}" onclick="StaffView.renderRoster('${t}')">Shift ${t}</button>`).join('');
+            },
+            async renderRoster(team){
+                this.activeTeamTab = team;
+                this.renderTabs();
+                const slots = await DB.getSlots();
+                const staffList = await DB.getStaff();
+                const assignments = await DB.getAssignments(team);
+                const rows = slots.map(sl=>{
+                    const a = assignments.find(x=>x.slot_id===sl.id);
+                    const staff = findStaff(a, staffList);
+                    return `<tr><td>${sl.label}</td><td>${sl.role_code}</td><td>${staff ? staff.full_name : '<i>Unassigned</i>'}</td><td>${staff ? (staff.job_title||'') : ''}</td><td>${a && a.is_team_leader ? 'TL' : ''}</td></tr>`;
+                }).join('');
+                document.getElementById('staffRosterBody').innerHTML = `<table class="app-table">
+                    <thead><tr><th>Line / Section</th><th>Role</th><th>Name</th><th>Title</th><th></th></tr></thead>
+                    <tbody>${rows}</tbody></table>`;
+            },
+            async submitLeave(){
+                const msg = document.getElementById('leaveReqMsg');
+                if (!session.staff){ msg.innerHTML = '<div class="app-msg error">No staff profile linked to this account.</div>'; return; }
+                const rec = {
+                    staff_id: session.staff.id,
+                    leave_type: document.getElementById('leaveType').value,
+                    start_date: document.getElementById('leaveStart').value,
+                    end_date: document.getElementById('leaveEnd').value || null,
+                    status: 'pending',
+                    note: document.getElementById('leaveNote').value,
+                };
+                if (!rec.start_date){ msg.innerHTML = '<div class="app-msg error">Pick a start date.</div>'; return; }
+                await DB.addLeave(rec);
+                msg.innerHTML = '<div class="app-msg ok">Leave request submitted &mdash; pending admin approval.</div>';
+            }
+        };
+
+        /* ============================================================
+           ADMIN PANEL
+           ============================================================ */
+        const AdminView = {
+            activeTeamTab: 'A',
+            async init(){
+                this.renderTeamTabs();
+                await this.renderAssignments('A');
+                await this.renderStaffDirectory();
+                await this.renderLeaveAdmin();
+                document.getElementById('cycleStartInput').value = await DB.getRotationStart();
+                const accMap = await DB.getAccountablePersons();
+                for (const t of SHIFT_LETTERS) document.getElementById('acc'+t).value = accMap[t] || '';
+            },
+            switchTab(tab){
+                document.querySelectorAll('.app-tabs .tab-btn').forEach(b=>b.classList.remove('active'));
+                document.querySelector(`.tab-btn[data-atab="${tab}"]`).classList.add('active');
+                document.querySelectorAll('.admin-tab-panel').forEach(el=>el.classList.remove('active'));
+                document.getElementById('admin-'+tab).classList.add('active');
+            },
+            renderTeamTabs(){
+                const el = document.getElementById('adminTeamTabs');
+                el.innerHTML = SHIFT_LETTERS.map(t=>
+                    `<button class="${t===this.activeTeamTab?'active':''}" onclick="AdminView.renderAssignments('${t}')">Shift ${t}</button>`).join('');
+            },
+            async renderAssignments(team){
+                this.activeTeamTab = team;
+                this.renderTeamTabs();
+                const slots = await DB.getSlots();
+                const staffList = await DB.getStaff();
+                const assignments = await DB.getAssignments(team);
+                const options = staffList.map(s=>`<option value="${s.id}">${s.full_name}</option>`).join('');
+                const rows = slots.map(sl=>{
+                    const a = assignments.find(x=>x.slot_id===sl.id);
+                    const showTL = sl.section==='mechanics';
+                    return `<tr>
+                        <td>${sl.label}</td><td>${sl.role_code}</td>
+                        <td><select id="assign_${sl.id}"><option value="">&mdash; Unassigned &mdash;</option>${options}</select></td>
+                        <td>${showTL ? `<input type="checkbox" id="tl_${sl.id}" ${a&&a.is_team_leader?'checked':''}>` : ''}</td>
+                        <td><button class="app-btn" style="padding:6px 12px;font-size:12.5px;" onclick="AdminView.saveSlot('${team}','${sl.id}')">Save</button></td>
+                    </tr>`;
+                }).join('');
+                document.getElementById('adminAssignBody').innerHTML = `<table class="app-table">
+                    <thead><tr><th>Line / Section</th><th>Role</th><th>Assign staff</th><th>Team Leader</th><th></th></tr></thead>
+                    <tbody>${rows}</tbody></table>`;
+                assignments.forEach(a=>{
+                    const sel = document.getElementById('assign_'+a.slot_id);
+                    if (sel) sel.value = a.staff_id;
+                });
+            },
+            async saveSlot(team, slotId){
+                const staffId = document.getElementById('assign_'+slotId).value || null;
+                const tlEl = document.getElementById('tl_'+slotId);
+                const isTL = tlEl ? tlEl.checked : false;
+                await DB.setAssignment(team, slotId, staffId, isTL);
+                alert('Saved.');
+            },
+            async renderStaffDirectory(){
+                const staffList = await DB.getStaff();
+                const rows = staffList.map(s=>`<tr>
+                    <td>${s.full_name}</td><td>${s.email||''}</td><td>${s.job_title||''}</td><td>${s.role_code||''}</td><td>${s.is_admin?'Yes':''}</td>
+                </tr>`).join('');
+                document.getElementById('staffDirectory').innerHTML = `<h3 style="margin-bottom:10px;">All staff</h3>
+                    <table class="app-table"><thead><tr><th>Name</th><th>Email</th><th>Title</th><th>Role</th><th>Admin?</th></tr></thead>
+                    <tbody>${rows}</tbody></table>`;
+            },
+            async addStaff(){
+                const msg = document.getElementById('addStaffMsg');
+                const name = document.getElementById('newStaffName').value.trim();
+                const email = document.getElementById('newStaffEmail').value.trim();
+                if (!name){ msg.innerHTML = '<div class="app-msg error">Name is required.</div>'; return; }
+                const file = document.getElementById('newStaffPhoto').files[0];
+                let photo_url = null;
+                try { photo_url = await DB.uploadPhoto(file); } catch(e){ msg.innerHTML = `<div class="app-msg error">Photo upload failed: ${e.message}</div>`; return; }
+                const rec = {
+                    full_name: name, email, job_title: document.getElementById('newStaffTitle').value,
+                    role_code: document.getElementById('newStaffRole').value,
+                    phone: document.getElementById('newStaffPhone').value,
+                    is_admin: document.getElementById('newStaffAdmin').checked,
+                    photo_url,
+                };
+                await DB.addStaff(rec);
+                msg.innerHTML = '<div class="app-msg ok">Staff member added.</div>';
+                await this.renderStaffDirectory();
+                await this.renderAssignments(this.activeTeamTab);
+            },
+            loadBulkFile(evt){
+                const file = evt.target.files[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => { document.getElementById('bulkStaffText').value = reader.result; };
+                reader.onerror = () => {
+                    document.getElementById('bulkImportMsg').innerHTML = '<div class="app-msg error">Could not read that file.</div>';
+                };
+                reader.readAsText(file);
+            },
+            parseBulkStaffText(text){
+                const VALID_ROLES = ['MO','PO','MM','PM','ET','OTHER'];
+                const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(Boolean);
+                const rows = [];
+                const errors = [];
+                lines.forEach((line, i) => {
+                    const delim = line.includes('\t') ? '\t' : ',';
+                    const parts = line.split(delim).map(p=>p.trim());
+                    if (i===0 && (parts[1]||'').toLowerCase().includes('email')) return; // header row
+                    const [full_name, email, job_title, roleRaw, phone] = parts;
+                    if (!full_name || !email){
+                        errors.push(`Line ${i+1}: missing name or email — skipped.`);
+                        return;
+                    }
+                    const role_code = (roleRaw || 'OTHER').toUpperCase();
+                    if (!VALID_ROLES.includes(role_code)){
+                        errors.push(`Line ${i+1}: role "${roleRaw||''}" not recognized (must be MO/PO/MM/PM/ET/OTHER) — skipped.`);
+                        return;
+                    }
+                    rows.push({ full_name, email, job_title: job_title || '', role_code, phone: phone || '', is_admin: false });
+                });
+                return { rows, errors };
+            },
+            async bulkImportStaff(){
+                const msg = document.getElementById('bulkImportMsg');
+                const text = document.getElementById('bulkStaffText').value;
+                if (!text.trim()){ msg.innerHTML = '<div class="app-msg error">Paste or upload some rows first.</div>'; return; }
+
+                const { rows, errors } = this.parseBulkStaffText(text);
+                if (!rows.length){
+                    msg.innerHTML = `<div class="app-msg error">No valid rows found.${errors.length ? '<br>'+errors.join('<br>') : ''}</div>`;
+                    return;
+                }
+
+                msg.innerHTML = `<div class="app-msg">Importing ${rows.length} staff member(s)&hellip;</div>`;
+                let successCount = 0;
+                const failMsgs = [...errors];
+                for (const rec of rows){
+                    try { await DB.addStaff(rec); successCount++; }
+                    catch (e){ failMsgs.push(`${rec.full_name} (${rec.email}): ${e.message || e}`); }
+                }
+
+                msg.innerHTML = `<div class="app-msg ${failMsgs.length ? 'error' : 'ok'}">
+                    Imported ${successCount} of ${rows.length} row(s).${failMsgs.length ? '<br>'+failMsgs.join('<br>') : ''}
+                </div>`;
+                document.getElementById('bulkStaffText').value = '';
+                document.getElementById('bulkStaffFile').value = '';
+                await this.renderStaffDirectory();
+                await this.renderAssignments(this.activeTeamTab);
+            },
+            async autoGenerate(){
+                const msg = document.getElementById('autoGenMsg');
+                if (!confirm('This replaces all current shift assignments with an auto-generated roster built from your staff pool. Continue?')) return;
+                msg.innerHTML = '<div class="app-msg">Generating&hellip;</div>';
+                try {
+                    const result = await DB.autoGenerateRoster();
+                    const shortfalls = Object.keys(result.neededCount).filter(r => (result.placedCount[r] || 0) < result.neededCount[r]);
+                    let extra = '';
+                    if (shortfalls.length){
+                        extra = '<br>Not enough staff to fill every slot for: ' + shortfalls.map(r =>
+                            `${r} (${result.placedCount[r] || 0}/${result.neededCount[r]})`).join(', ') +
+                            '. Add more staff with those positions and generate again, or fill the rest manually in Assignments.';
+                    }
+                    msg.innerHTML = `<div class="app-msg ok">Placed ${result.totalPlaced} of ${result.totalSlots} slots.${extra}</div>`;
+                    await this.renderAssignments(this.activeTeamTab);
+                    await renderBoard();
+                } catch (e){
+                    msg.innerHTML = `<div class="app-msg error">${e.message || e}</div>`;
+                }
+            },
+            async renderLeaveAdmin(){
+                const leaveList = await DB.getLeave();
+                const staffList = await DB.getStaff();
+
+                const staffSelect = document.getElementById('adminLeaveStaff');
+                staffSelect.innerHTML = staffList.map(s=>`<option value="${s.id}">${s.full_name}</option>`).join('');
+
+                const rows = leaveList.map(l=>{
+                    const staff = staffList.find(s=>s.id===l.staff_id) || l.staff;
+                    let actions = '';
+                    if (l.status === 'pending'){
+                        actions = `<button class="app-btn" style="padding:5px 10px;font-size:12px;background:var(--ok);" onclick="AdminView.setLeaveStatus('${l.id}','approved')">Approve</button>
+                            <button class="app-btn" style="padding:5px 10px;font-size:12px;background:var(--danger);margin-left:4px;" onclick="AdminView.setLeaveStatus('${l.id}','rejected')">Reject</button>`;
+                    } else if (l.status === 'approved'){
+                        actions = `<button class="app-btn secondary" style="padding:5px 10px;font-size:12px;" onclick="AdminView.setLeaveStatus('${l.id}','rejected')">Revoke</button>`;
+                    } else {
+                        actions = `<button class="app-btn secondary" style="padding:5px 10px;font-size:12px;" onclick="AdminView.setLeaveStatus('${l.id}','approved')">Re-approve</button>`;
+                    }
+                    return `<tr><td>${staff?staff.full_name:''}</td><td>${l.leave_type}</td><td>${l.start_date}</td><td>${l.end_date||''}</td><td>${l.status}</td><td>${l.note||''}</td><td>${actions}</td></tr>`;
+                }).join('');
+                document.getElementById('leaveAdminBody').innerHTML = `<h3 style="margin-bottom:10px;">Leave records</h3><table class="app-table">
+                    <thead><tr><th>Staff</th><th>Type</th><th>Start</th><th>End</th><th>Status</th><th>Note</th><th></th></tr></thead>
+                    <tbody>${rows}</tbody></table>
+                    <p style="font-size:12.5px;color:#777;margin-top:10px;">Reserve/backup staff (the "OTHERS" column on the board) are assigned from the Assignments tab, under Shift &rarr; Others.</p>`;
+            },
+            async addLeaveRecord(){
+                const msg = document.getElementById('addLeaveMsg');
+                const staffId = document.getElementById('adminLeaveStaff').value;
+                const start = document.getElementById('adminLeaveStart').value;
+                if (!staffId){ msg.innerHTML = '<div class="app-msg error">Add a staff member first (Staff Directory tab).</div>'; return; }
+                if (!start){ msg.innerHTML = '<div class="app-msg error">Pick a start date.</div>'; return; }
+                const rec = {
+                    staff_id: staffId,
+                    leave_type: document.getElementById('adminLeaveType').value,
+                    status: document.getElementById('adminLeaveStatus').value,
+                    start_date: start,
+                    end_date: document.getElementById('adminLeaveEnd').value || null,
+                    note: document.getElementById('adminLeaveNote').value,
+                };
+                try {
+                    await DB.addLeave(rec);
+                    msg.innerHTML = '<div class="app-msg ok">Leave record added.</div>';
+                    document.getElementById('adminLeaveNote').value = '';
+                    await this.renderLeaveAdmin();
+                    await renderBoard();
+                } catch (e){
+                    msg.innerHTML = `<div class="app-msg error">${e.message || e}</div>`;
+                }
+            },
+            async setLeaveStatus(id, status){
+                try {
+                    await DB.updateLeaveStatus(id, status);
+                    await this.renderLeaveAdmin();
+                    await renderBoard();
+                } catch (e){
+                    alert('Could not update: ' + (e.message || e));
+                }
+            },
+            async saveRotation(){
+                const val = document.getElementById('cycleStartInput').value;
+                if (!val) return;
+                await DB.saveRotationStart(val);
+                document.getElementById('rotationMsg').innerHTML = '<div class="app-msg ok">Rotation start date saved.</div>';
+                await renderBoard();
+            },
+            async saveAccountable(){
+                for (const t of SHIFT_LETTERS){
+                    await DB.saveAccountablePerson(t, document.getElementById('acc'+t).value.trim());
+                }
+                document.getElementById('accountableMsg').innerHTML = '<div class="app-msg ok">Saved.</div>';
+                await renderBoard();
+            }
+        };
+
+        /* ============================================================
+           INIT
+           ============================================================ */
+        window.addEventListener('error', (e)=>{
+            console.error('Uncaught error:', e.error || e.message);
+        });
+        window.addEventListener('unhandledrejection', (e)=>{
+            console.error('Unhandled promise rejection:', e.reason);
+        });
+
+        window.addEventListener('load', async ()=>{
+            renderNav();
+            tickClock();
+            setInterval(tickClock, 1000);
+            await renderBoard();
+            setInterval(renderBoard, 60000);
+
+            if (sb){
+                try {
+                    const { data: { session: s } } = await withTimeout(sb.auth.getSession(), 8000);
+                    if (s){ await loadStaffProfile(s.user); afterLogin(); }
+                    sb.auth.onAuthStateChange(async (event, s)=>{
+                        if (event === 'SIGNED_IN' && s){ await loadStaffProfile(s.user); afterLogin(); }
+                        if (event === 'SIGNED_OUT'){ session = { user:null, staff:null }; renderNav(); }
+                    });
+                } catch (e){
+                    console.error('Auth session check failed:', e);
+                }
+            }
+        });
+
+    </script>
+
+</body>
+</html>
