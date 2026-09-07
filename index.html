@@ -1770,6 +1770,19 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
             }).format(date);
         }
 
+        function effectiveRotationDateString(){
+            // The night shift (18:01-07:59) spans two EAT calendar dates. Before
+            // the morning shift starts (i.e. it's still the small hours), we're
+            // in the tail end of the PREVIOUS calendar day's night shift, so the
+            // rotation lookup must still use yesterday's date — otherwise the
+            // team on duty would get swapped out the instant the clock crosses
+            // midnight, hours before their shift is actually meant to end.
+            if (eatTimeString() < CONFIG.DAY_SHIFT_START){
+                return eatDateString(new Date(Date.now() - 24 * 60 * 60 * 1000));
+            }
+            return eatDateString();
+        }
+
         let sb = null;
         if (window.supabase) {
             sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
@@ -2271,7 +2284,7 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
 
         async function renderBoard(){
             try {
-                const today = eatDateString();
+                const today = effectiveRotationDateString();
                 const slots = await DB.getSlots();
 
                 // Fetch everything up front, with each call individually
@@ -2356,7 +2369,7 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                 const el = document.getElementById('myDutyCard');
                 if (!session.staff){ el.innerHTML = `<div class="app-msg error">Your login isn't linked to a staff profile yet. Contact your admin.</div>`; return; }
                 const cycleStart = await DB.getRotationStart();
-                const today = eatDateString();
+                const today = effectiveRotationDateString();
                 const statuses = computeTeamStatus(today, cycleStart);
                 let myTeam = null;
                 for (const t of SHIFT_LETTERS){
