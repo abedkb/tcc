@@ -1770,6 +1770,16 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
             }).format(date);
         }
 
+        // Disaster fallback ONLY — used if Supabase is briefly unreachable when
+        // reading rotation_config.cycle_start_date. This must stay a FIXED date,
+        // never "today": if it moved with the clock, every fresh call during a
+        // connection blip would recompute a different (wrong) cycle index for
+        // that moment, then silently correct itself once the real read
+        // succeeds again — which looks exactly like a team appearing on the
+        // wrong day. A fixed constant keeps a transient outage's result at
+        // least stable, instead of scrambling day-to-day.
+        const ROTATION_FALLBACK_DATE = '2026-01-01';
+
         function effectiveRotationDateString(){
             // The night shift (18:01-07:59) spans two EAT calendar dates. Before
             // the morning shift starts (i.e. it's still the small hours), we're
@@ -1878,7 +1888,7 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                 return safeRead(async ()=>{
                     const { data, error } = await sb.from('rotation_config').select('cycle_start_date').eq('id',1).single();
                     if (error) throw error; return data.cycle_start_date;
-                }, eatDateString());
+                }, ROTATION_FALLBACK_DATE);
             },
             async saveRotationStart(dateStr){
                 const { error } = await sb.from('rotation_config').update({cycle_start_date:dateStr}).eq('id',1);
