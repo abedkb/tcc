@@ -1793,6 +1793,14 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
             return eatDateString();
         }
 
+        function nextDateString(dateStr){
+            // Pure calendar-date arithmetic (no timezone involved) — used to
+            // look up tomorrow's rotation slot from a yyyy-mm-dd string.
+            const d = new Date(dateStr + 'T00:00:00Z');
+            d.setUTCDate(d.getUTCDate() + 1);
+            return d.toISOString().slice(0, 10);
+        }
+
         let sb = null;
         if (window.supabase) {
             sb = window.supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
@@ -2200,7 +2208,7 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
             return entries;
         }
 
-        function shiftColumnHtml(teamLetter, statusWord, isActiveNow, slots, staffList, accountable, assignments, leaveList){
+        function shiftColumnHtml(teamLetter, statusWord, isActiveNow, isNextUp, nextUpWord, slots, staffList, accountable, assignments, leaveList){
             const fmSlot = slots.find(s=>s.section==='fm');
             const fmAssignment = assignments.find(x=>x.slot_id===fmSlot.id);
             const fmStaff = findStaff(fmAssignment, staffList);
@@ -2238,9 +2246,15 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
             const perm = leaveContentHtml(leaveList, staffList, 'permission', assignments);
             const others = reserveStaffHtml(teamLetter, assignments, staffList);
 
-            const barLabel = statusWord === 'OFF'
-                ? 'OFF'
-                : `${statusWord} &mdash; ${isActiveNow ? 'ON DUTY' : 'STANDBY'}`;
+            // STANDBY belongs to whoever is genuinely about to come on duty next
+            // (tomorrow's morning team while it's night, or today's night team
+            // while it's morning) — not to whichever team happened to work
+            // earlier today and has simply already finished.
+            const barLabel = isActiveNow
+                ? `${statusWord} &mdash; ON DUTY`
+                : isNextUp
+                    ? `${nextUpWord} &mdash; STANDBY`
+                    : (statusWord === 'OFF' ? 'OFF' : statusWord);
 
             return `<section class="shift-column ${isActiveNow?'active-now':''}">
 
@@ -2310,6 +2324,12 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
 
                 const statuses = computeTeamStatus(today, cycleStart);
                 const activeWindow = currentlyActiveWindow();
+                // Only needed to find "who's genuinely next" while it's night —
+                // that's tomorrow's morning team, not today's (already-finished)
+                // morning team.
+                const nextDayStatuses = activeWindow === 'NIGHT'
+                    ? computeTeamStatus(nextDateString(today), cycleStart)
+                    : null;
 
                 // From here on everything is a pure, synchronous string-building
                 // step over plain data already in hand — it cannot hang or throw
@@ -2318,7 +2338,16 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                 for (const team of SHIFT_LETTERS){
                     const statusWord = statuses[team];
                     const isActiveNow = statusWord === activeWindow;
-                    html += shiftColumnHtml(team, statusWord, isActiveNow, slots, staffList,
+                    let isNextUp = false;
+                    let nextUpWord = null;
+                    if (!isActiveNow){
+                        if (activeWindow === 'MORNING' && statusWord === 'NIGHT'){
+                            isNextUp = true; nextUpWord = 'NIGHT';
+                        } else if (activeWindow === 'NIGHT' && nextDayStatuses[team] === 'MORNING'){
+                            isNextUp = true; nextUpWord = 'MORNING';
+                        }
+                    }
+                    html += shiftColumnHtml(team, statusWord, isActiveNow, isNextUp, nextUpWord, slots, staffList,
                         accountableMap[team] || '', assignmentsByTeam[team], leaveList);
                 }
                 document.getElementById('rosterBoard').innerHTML = html;
@@ -2334,7 +2363,7 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                     const slots = SLOT_TEMPLATE;
                     let html = '';
                     for (const team of SHIFT_LETTERS){
-                        html += shiftColumnHtml(team, 'OFF', false, slots, [], '', [], []);
+                        html += shiftColumnHtml(team, 'OFF', false, false, null, slots, [], '', [], []);
                     }
                     document.getElementById('rosterBoard').innerHTML = html;
                 } catch (e2){
