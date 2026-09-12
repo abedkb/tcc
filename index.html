@@ -702,14 +702,8 @@
             padding:
                 4px 8px;
 
-            display:
-                flex;
-
-            align-items:
+            text-align:
                 center;
-
-            justify-content:
-                space-between;
 
             font-size:
                 clamp(13px, 1.2vw, 18px);
@@ -725,24 +719,6 @@
 
         .machine-box-title::before {
             content: "\1F3ED  ";
-        }
-
-
-        .online-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 3px;
-            font-size: 0.55em;
-            font-weight: 600;
-            color: #2a8f52;
-            background: #e7f7ec;
-            border-radius: 10px;
-            padding: 2px 7px;
-        }
-
-        .online-badge::before {
-            content: "\25CF";
-            font-size: 0.8em;
         }
 
 
@@ -2788,7 +2764,7 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432, D"></textarea>
             const MACHINE_ACCENTS = ['#3aa65a','#3b82c9','#8b5fc9','#e08a2e','#1fa8a0','#d64550'];
             const machineCardHtml = (m, i) => `<div class="machine-card">
                 <div class="machine-box" style="--machine-accent:${MACHINE_ACCENTS[i % MACHINE_ACCENTS.length]};">
-                    <div class="machine-box-title">${m} <span class="online-badge">Online</span></div>
+                    <div class="machine-box-title">${m}</div>
                     ${machineBoxSlotsHtml(['MO','PO'], 'machine', m, slots, assignments, staffList, teamLetter)}
                 </div>
             </div>`;
@@ -2796,7 +2772,7 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432, D"></textarea>
             const machinesSecondRowHtml = MACHINE_LABELS.slice(4).map((m,i)=>machineCardHtml(m,i+4)).join('')
                 + `<div class="fm-card">
                     <div class="machine-box" style="--machine-accent:#5b6470;">
-                        <div class="machine-box-title">${FM_LABEL} <span class="online-badge">Online</span></div>
+                        <div class="machine-box-title">${FM_LABEL}</div>
                         ${machineBoxSlotsHtml(['MO'], 'fm', FM_LABEL, slots, assignments, staffList, teamLetter)}
                     </div>
                 </div>`;
