@@ -43,7 +43,7 @@
             --dark-section: #3d4246;
             --dark-section-2: #30363a;
 
-            --board-bg: #ececec;
+            --board-bg: linear-gradient(160deg, #eef2fb 0%, #e3e9f7 45%, #dfe6f3 100%);
             --panel-bg: #f8f8f8;
 
             --border: #777;
@@ -106,7 +106,7 @@
                 var(--white);
 
             padding:
-                10px 20px;
+                6px 16px;
 
             display:
                 flex;
@@ -118,7 +118,7 @@
                 center;
 
             min-height:
-                75px;
+                46px;
 
         }
 
@@ -137,16 +137,16 @@
         .board-title h1 {
 
             font-size:
-                clamp(22px, 2.2vw, 42px);
+                clamp(14px, 1.4vw, 22px);
 
             font-weight:
-                500;
+                700;
 
             letter-spacing:
-                2px;
+                1px;
 
             color:
-                #555;
+                #2c3550;
 
         }
 
@@ -159,8 +159,8 @@
 
         .brand-logo-wrap {
 
-            width: 62px;
-            height: 45px;
+            width: 42px;
+            height: 30px;
             overflow: hidden;
             flex-shrink: 0;
 
@@ -176,7 +176,7 @@
 
             overflow: hidden;
 
-            transform: scale(0.26);
+            transform: scale(0.175);
             transform-origin: top left;
 
         }
@@ -309,7 +309,7 @@
         .fullscreen-button {
 
             background:
-                var(--dark-section);
+                linear-gradient(135deg, #333c4d, #1d2330);
 
             color:
                 white;
@@ -318,16 +318,22 @@
                 none;
 
             padding:
-                10px 15px;
+                6px 12px;
 
             cursor:
                 pointer;
 
             border-radius:
-                4px;
+                20px;
 
             font-size:
-                13px;
+                11.5px;
+
+            font-weight:
+                600;
+
+            box-shadow:
+                0 2px 5px rgba(0,0,0,0.18);
 
         }
 
@@ -356,7 +362,7 @@
                 100%;
 
             min-height:
-                calc(100vh - 75px);
+                calc(100vh - 50px);
 
             border-bottom:
                 2px solid var(--border);
@@ -382,6 +388,9 @@
             position:
                 relative;
 
+            container-type:
+                inline-size;
+
         }
 
 
@@ -400,7 +409,7 @@
         .shift-name {
 
             height:
-                72px;
+                48px;
 
             display:
                 flex;
@@ -411,17 +420,61 @@
             justify-content:
                 center;
 
+            position:
+                relative;
+
             color:
                 white;
 
+            box-shadow:
+                inset 0 -2px 6px rgba(0,0,0,0.12);
+        }
+
+
+        .shift-name-text {
+
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            align-items:
+                center;
+
+            line-height:
+                1.15;
+
+        }
+
+
+        .shift-status-line {
+
             font-size:
-                clamp(24px, 2vw, 38px);
+                10px;
 
             font-weight:
-                500;
+                bold;
 
             letter-spacing:
-                2px;
+                1px;
+
+            opacity:
+                0.85;
+
+        }
+
+
+        .shift-name-main {
+
+            font-size:
+                clamp(16px, 1.6vw, 24px);
+
+            font-weight:
+                600;
+
+            letter-spacing:
+                1px;
 
         }
 
@@ -429,7 +482,7 @@
         .shift-a {
 
             background:
-                var(--shift-a);
+                linear-gradient(135deg, var(--shift-a), var(--shift-a-dark));
 
         }
 
@@ -437,7 +490,7 @@
         .shift-b {
 
             background:
-                var(--shift-b);
+                linear-gradient(135deg, var(--shift-b), var(--shift-b-dark));
 
         }
 
@@ -445,7 +498,7 @@
         .shift-c {
 
             background:
-                var(--shift-c);
+                linear-gradient(135deg, var(--shift-c), var(--shift-c-dark));
 
         }
 
@@ -453,7 +506,7 @@
         .shift-d {
 
             background:
-                var(--shift-d);
+                linear-gradient(135deg, var(--shift-d), var(--shift-d-dark));
 
         }
 
@@ -474,13 +527,13 @@
                 center;
 
             font-size:
-                clamp(14px, 1.1vw, 22px);
+                clamp(15.5px, 1.3vw, 24px);
 
             font-weight:
                 500;
 
             padding:
-                7px 5px;
+                8px 5px;
 
             letter-spacing:
                 1px;
@@ -503,10 +556,10 @@
                 center;
 
             padding:
-                5px;
+                6px;
 
             font-size:
-                14px;
+                clamp(13px, 1.05vw, 17px);
 
             font-weight:
                 500;
@@ -521,59 +574,501 @@
 
 
         /* ==================================================
-           MACHINE AREA
+           DUTY BOARD BODY — wraps machines/team/status and spaces
+           them across the available height with justify-content:
+           space-between (see fitBoardToScreen(), which sets a
+           min-height here from the actual space available below
+           the header). Text never shrinks to force a fit — if
+           content is naturally shorter than the screen, the GAPS
+           between sections stretch to fill it; if content is
+           naturally taller, min-height simply has no effect and
+           the page scrolls (body.board-mode's overflow-y is the
+           safety net for that case).
         ================================================== */
+        .duty-board-body {
 
-        .machine-grid {
+            display:
+                flex;
+
+            flex-direction:
+                column;
+
+            justify-content:
+                space-between;
+
+            gap:
+                8px;
+
+        }
+
+
+        /* ==================================================
+           MACHINE AREA — reference boxes only (no staff tied to
+           them): 4 across, then MP29/MP30/FM03&amp;FM04 in a row of
+           3 below. container-type on .shift-column lets these
+           respond to the COLUMN's own width (see @container rules
+           further down), so the same markup works full-width in
+           rotate mode and narrower when all 4 teams are shown.
+        ================================================== */
+        .machines-top {
 
             display:
                 grid;
 
             grid-template-columns:
-                repeat(2, 1fr);
+                repeat(4, 1fr);
 
             gap:
-                6px;
+                clamp(8px, 2vw, 24px);
 
-            padding:
-                7px;
-
-        }
-
-
-        .machine-card {
-
-            border:
-                1px solid var(--border);
-
-            background:
-                white;
-
-            min-height:
-                95px;
+            margin-bottom:
+                clamp(8px, 1.5vw, 16px);
 
         }
 
 
-        .machine-title {
+        .machines-second-row {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(3, 1fr);
+
+            gap:
+                clamp(8px, 2vw, 24px);
+
+            width:
+                80%;
+
+            margin:
+                0 auto;
+
+        }
+
+
+        .glossy-section-header {
+            background: linear-gradient(135deg, #333c4d, #1d2330);
+            color: white;
+            text-align: center;
+            font-size: clamp(11px, 1vw, 14px);
+            font-weight: bold;
+            letter-spacing: 1px;
+            padding: 5px;
+            border-radius: 8px 8px 0 0;
+            margin-top: 6px;
+        }
+
+
+        .machine-card, .fm-card {
 
             text-align:
                 center;
 
+        }
+
+
+        .machine-box, .fm-box {
+
+            border:
+                1px solid var(--light-border);
+
+            border-left:
+                4px solid var(--machine-accent, var(--border));
+
+            border-radius:
+                8px;
+
+            background:
+                white;
+
+            overflow:
+                hidden;
+
+            box-shadow:
+                0 2px 8px rgba(30,40,70,0.10);
+
+        }
+
+
+        .machine-box-title {
+
+            background:
+                white;
+
+            border-bottom:
+                1px solid var(--light-border);
+
+            padding:
+                4px 8px;
+
+            display:
+                flex;
+
+            align-items:
+                center;
+
+            justify-content:
+                space-between;
+
             font-size:
-                clamp(15px, 1.2vw, 23px);
+                clamp(13px, 1.2vw, 18px);
 
             font-weight:
-                500;
+                600;
+
+            color:
+                #2c3550;
+
+        }
+
+
+        .machine-box-title::before {
+            content: "\1F3ED  ";
+        }
+
+
+        .online-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+            font-size: 0.55em;
+            font-weight: 600;
+            color: #2a8f52;
+            background: #e7f7ec;
+            border-radius: 10px;
+            padding: 2px 7px;
+        }
+
+        .online-badge::before {
+            content: "\25CF";
+            font-size: 0.8em;
+        }
+
+
+        /* ==================================================
+           TEAM SECTION — a real table: role codes across the top,
+           one name per role, then a TL row. Each name cell is
+           coloured with that PERSON's home team (not necessarily
+           this column's team), so someone on loan is still
+           unmistakable even sitting in a row of their own team's
+           colour.
+        ================================================== */
+        .team-section {
+
+            width:
+                80%;
+
+            margin:
+                0 auto;
+
+        }
+
+
+        /* ==================================================
+           BOARD NAV ARROWS — replace the old dotted rotation
+           indicator (and the redundant pair that used to sit inside
+           the SHIFT A/B/C/D header). One set only, flanking the
+           whole card at its outer edges, vertically centred on
+           .shift-column — only shown in rotate mode.
+        ================================================== */
+        .board-nav-arrow {
+
+            display:
+                none;
+
+            position:
+                absolute;
+
+            top:
+                50%;
+
+            transform:
+                translateY(-50%);
+
+            width:
+                34px;
+
+            height:
+                34px;
+
+            border-radius:
+                50%;
+
+            border:
+                none;
+
+            background:
+                linear-gradient(135deg, #7b68c9, #4a3f96);
+
+            color:
+                white;
+
+            font-size:
+                18px;
+
+            font-weight:
+                bold;
+
+            cursor:
+                pointer;
+
+            box-shadow:
+                0 3px 8px rgba(30,20,70,0.3);
+
+            z-index:
+                2;
+
+        }
+
+
+        .board-nav-arrow:hover {
+
+            opacity:
+                .88;
+
+        }
+
+
+        .board-nav-arrow.prev { left: 8px; }
+        .board-nav-arrow.next { right: 8px; }
+
+        .roster-board.rotate-mode .board-nav-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+
+        .team-section h2 {
+
+            color:
+                white;
+
+            padding:
+                7px;
+
+            font-size:
+                clamp(13px, 1.1vw, 16px);
+
+            text-align:
+                center;
+
+            letter-spacing:
+                .5px;
+
+            border-radius:
+                8px 8px 0 0;
+
+            box-shadow:
+                0 2px 6px rgba(30,40,70,0.12);
+
+        }
+
+
+        .team-section h2::before {
+            content: "\1F465  ";
+        }
+
+
+        .team-table {
+
+            border-radius:
+                0 0 8px 8px;
+
+            overflow:
+                hidden;
+
+            box-shadow:
+                0 3px 10px rgba(30,40,70,0.10);
+
+            width:
+                100%;
+
+            border-collapse:
+                collapse;
+
+            table-layout:
+                fixed;
+
+        }
+
+
+        .team-table th, .team-table td {
+
+            border:
+                1px solid var(--light-border);
+
+            text-align:
+                center;
 
             padding:
                 4px;
 
-            color:
-                #555;
+        }
 
-            border-bottom:
-                1px solid var(--border);
+
+        .team-table th {
+
+            font-size:
+                clamp(13px, 1.1vw, 17px);
+
+            height:
+                28px;
+
+            color:
+                white;
+
+        }
+
+
+        .team-table td {
+
+            height:
+                clamp(38px, 4.5vw, 50px);
+
+            font-size:
+                clamp(12.5px, 1.05vw, 16px);
+
+            font-weight:
+                bold;
+
+        }
+
+
+        .team-name-sub {
+
+            display:
+                block;
+
+            font-size:
+                0.68em;
+
+            font-weight:
+                normal;
+
+            opacity:
+                .85;
+
+        }
+
+
+        .tl-row td {
+
+            height:
+                26px;
+
+            background:
+                #f5f5f5;
+
+        }
+
+
+        .tl-row input[type="radio"] {
+
+            width:
+                18px;
+
+            height:
+                18px;
+
+        }
+
+
+        /* ==================================================
+           LEAVE &amp; STATUS ROW — full-width strip of 5 boxes,
+           colours reuse the same --vacation/--sick-leave/
+           --family-leave/--others/--permission vars used elsewhere.
+        ================================================== */
+        .status-section {
+
+            display:
+                grid;
+
+            grid-template-columns:
+                repeat(5, 1fr);
+
+            gap:
+                clamp(10px, 2vw, 25px);
+
+        }
+
+
+        .status-card {
+
+            text-align:
+                center;
+
+        }
+
+
+        .status-card h3 {
+
+            font-size:
+                clamp(11.5px, 0.95vw, 15px);
+
+            font-weight:
+                700;
+
+            color:
+                white;
+
+            margin-bottom:
+                0;
+
+            padding:
+                6px 4px;
+
+            border-radius:
+                8px 8px 0 0;
+
+            box-shadow:
+                0 2px 6px rgba(30,40,70,0.12);
+
+        }
+
+
+        .status-card.vacation h3 { background: linear-gradient(135deg, #4fc3d9, var(--vacation)); }
+        .status-card.sick h3 { background: linear-gradient(135deg, #ef7b8a, var(--sick-leave)); }
+        .status-card.family h3 { background: linear-gradient(135deg, #a98fe0, var(--family-leave)); }
+        .status-card.permission h3 { background: linear-gradient(135deg, #e0b45a, var(--permission)); }
+        .status-card.others h3 { background: linear-gradient(135deg, #8f98a3, var(--others)); }
+
+
+
+        .status-box {
+
+            min-height:
+                54px;
+
+            border:
+                1px solid var(--light-border);
+
+            border-radius:
+                0 0 8px 8px;
+
+            background:
+                #fafbfd;
+
+            box-shadow:
+                0 2px 8px rgba(30,40,70,0.08);
+
+        }
+
+
+        @container (max-width: 700px) {
+
+            .machines-top { grid-template-columns: repeat(2, 1fr); }
+            .machines-second-row { grid-template-columns: 1fr; width: 100%; }
+            .team-section { width: 95%; }
+            .status-section { grid-template-columns: repeat(2, 1fr); }
+
+        }
+
+
+        @container (max-width: 420px) {
+
+            .status-section { grid-template-columns: 1fr; }
 
         }
 
@@ -588,10 +1083,10 @@
                 grid;
 
             grid-template-columns:
-                38px 30px 1fr;
+                42px 34px 1fr;
 
             min-height:
-                38px;
+                44px;
 
             border-bottom:
                 1px solid #aaa;
@@ -627,7 +1122,7 @@
                 500;
 
             font-size:
-                clamp(12px, 1vw, 18px);
+                clamp(13.5px, 1.1vw, 19px);
 
             border-right:
                 1px solid white;
@@ -679,10 +1174,10 @@
         .photo-placeholder {
 
             width:
-                28px;
+                32px;
 
             height:
-                28px;
+                32px;
 
             border-radius:
                 50%;
@@ -700,7 +1195,7 @@
                 center;
 
             font-size:
-                10px;
+                11px;
 
             color:
                 #555;
@@ -739,7 +1234,7 @@
         .staff-name {
 
             font-size:
-                clamp(10px, 0.9vw, 15px);
+                clamp(13px, 1.15vw, 19px);
 
             font-weight:
                 bold;
@@ -759,7 +1254,7 @@
         .staff-role {
 
             font-size:
-                clamp(8px, 0.7vw, 11px);
+                clamp(10.5px, 0.9vw, 14px);
 
             margin-top:
                 2px;
@@ -773,7 +1268,7 @@
         .staff-phone {
 
             font-size:
-                clamp(8px, 0.65vw, 10px);
+                clamp(9.5px, 0.8vw, 12px);
 
             margin-top:
                 1px;
@@ -855,10 +1350,10 @@
                 grid;
 
             grid-template-columns:
-                38px 1fr;
+                42px 1fr;
 
             min-height:
-                38px;
+                44px;
 
             border-bottom:
                 1px solid #aaa;
@@ -887,7 +1382,7 @@
                 1px solid #aaa;
 
             font-size:
-                12px;
+                14px;
 
         }
 
@@ -940,7 +1435,7 @@
         .machine-label {
 
             min-height:
-                37px;
+                42px;
 
             display:
                 flex;
@@ -955,7 +1450,7 @@
                 1px solid var(--light-border);
 
             font-size:
-                11px;
+                clamp(12px, 1vw, 15px);
 
             color:
                 #666;
@@ -1025,113 +1520,10 @@
 
 
         /* ==================================================
-           STATUS SECTIONS
+           STATUS SECTIONS — grid/card/box rules now live with the
+           siliba-style team layout above; .status-content below
+           is still used as the padded wrapper inside .status-box.
         ================================================== */
-
-        .status-grid {
-
-            display:
-                grid;
-
-            grid-template-columns:
-                repeat(2, 1fr);
-
-            gap:
-                0;
-
-        }
-
-
-        .status-section {
-
-            border-right:
-                1px solid var(--border);
-
-            border-bottom:
-                1px solid var(--border);
-
-            min-height:
-                115px;
-
-        }
-
-
-        .status-section:nth-child(even) {
-
-            border-right:
-                none;
-
-        }
-
-
-        .status-title {
-
-            text-align:
-                center;
-
-            padding:
-                5px;
-
-            font-size:
-                11px;
-
-            font-weight:
-                bold;
-
-            color:
-                #444;
-
-            background:
-                #eeeeee;
-
-            border-bottom:
-                1px solid var(--border);
-
-        }
-
-
-        .status-vacation {
-
-            border-top:
-                5px solid var(--vacation);
-
-        }
-
-
-        .status-sick {
-
-            border-top:
-                5px solid var(--sick-leave);
-
-        }
-
-
-        .status-family {
-
-            border-top:
-                5px solid var(--family-leave);
-
-        }
-
-
-        .status-others {
-
-            border-top:
-                5px solid var(--others);
-
-        }
-
-
-        .status-permission {
-
-            grid-column:
-                1 / -1;
-
-            border-top:
-                5px solid var(--permission);
-
-        }
-
 
         .status-content {
 
@@ -1154,13 +1546,13 @@
                 white;
 
             padding:
-                5px;
+                6px;
 
             margin-bottom:
                 4px;
 
             font-size:
-                10px;
+                clamp(10.5px, 0.85vw, 13px);
 
         }
 
@@ -1200,13 +1592,13 @@
                 white;
 
             padding:
-                8px;
+                9px;
 
             margin-top:
                 auto;
 
             font-size:
-                12px;
+                clamp(12px, 1vw, 15px);
 
             letter-spacing:
                 1px;
@@ -1348,12 +1740,13 @@
 
         .live-clock {
             font-family: Arial, Helvetica, sans-serif;
-            font-size: clamp(20px, 2.2vw, 34px);
+            font-size: clamp(13px, 1.4vw, 20px);
             font-weight: bold;
             color: #333;
             letter-spacing: 1px;
             font-variant-numeric: tabular-nums;
         }
+        .live-clock::before { content: "\1F550  "; }
 
         .conn-status {
             background: #fdecea;
@@ -1364,19 +1757,10 @@
             border-bottom: 1px solid #f0c4bf;
         }
 
-        /* ---- shift status bar (MORNING/NIGHT + ON DUTY/STANDBY, or OFF), sits above the coloured shift-name band ---- */
-        .shift-status-bar {
-            background: #dcdcdc;
-            color: #555;
-            text-align: center;
-            font-size: 12px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            padding: 4px;
-        }
-        .shift-status-bar.is-now {
-            background: var(--accent);
-            color: #2b2b2b;
+        /* ---- shift status bar (DAY/NIGHT + ON DUTY/STANDBY, or OFF), sits above the coloured shift-name band ---- */
+        /* ---- shift status line now lives INSIDE .shift-name (merged block, see .shift-status-line below) ---- */
+        .shift-status-line.is-now {
+            color: #ffe9a8;
         }
         .shift-column.active-now {
             box-shadow: inset 0 0 0 4px var(--accent);
@@ -1422,16 +1806,18 @@
         .app-view.active { display: block; }
 
         .nav-btn {
-            background: var(--dark-section);
+            background: linear-gradient(135deg, #333c4d, #1d2330);
             color: #fff;
             border: none;
-            padding: 9px 15px;
-            border-radius: 4px;
+            padding: 6px 12px;
+            border-radius: 20px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 11.5px;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.18);
         }
         .nav-btn:hover { opacity: .88; }
-        .nav-btn.accent { background: var(--accent); color: #2b2b2b; font-weight: bold; }
+        .nav-btn.accent { background: linear-gradient(135deg, #e6b84e, var(--accent)); color: #2b2b2b; font-weight: bold; }
 
         .app-card {
             background: #fff;
@@ -1471,6 +1857,114 @@
 
         .admin-tab-panel { display: none; }
         .admin-tab-panel.active { display: block; }
+
+        /* ---- rotating single-shift kiosk view ---- */
+
+
+        .roster-board.rotate-mode { grid-template-columns: 1fr; width: 100%; }
+        .roster-board.rotate-mode .shift-column { display: none; }
+        .roster-board.rotate-mode .shift-column.rotate-active { display: block; animation: rotateFadeIn .5s ease; }
+        @keyframes rotateFadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* ==================================================
+           TEAM BODY — machines/mechanics/filter/electrician run
+           beside the leave &amp; status column instead of below it,
+           so a team's total height is roughly the taller of the two
+           sides instead of the sum of both. On a wide column (the
+           default rotating single-team view, or a wide screen) they
+           sit side by side; if the column is too narrow for that
+           (e.g. all 4 teams shown at once on a smaller screen),
+           flex-wrap drops team-status underneath automatically —
+           no separate narrow-screen layout needed.
+        ================================================== */
+        .team-body {
+
+            display:
+                flex;
+
+            flex-wrap:
+                wrap;
+
+            align-items:
+                flex-start;
+
+        }
+
+
+        .team-ops {
+
+            flex:
+                3 1 260px;
+
+            min-width:
+                260px;
+
+        }
+
+
+        .team-status {
+
+            flex:
+                2 1 190px;
+
+            min-width:
+                190px;
+
+        }
+
+
+        .team-status .status-grid {
+
+            grid-template-columns:
+                1fr;
+
+        }
+
+        /* ---- staff search (Admin > Staff Directory) ---- */
+        #staffSearch { max-width: 320px; }
+
+        /* ==================================================
+           FIT-TO-SCREEN — the public duty board's height is set
+           (via JS, see fitBoardToScreen()) so .duty-board-body's
+           space-between can stretch to fill the screen with no
+           scrolling on a normal screen, WITHOUT shrinking any text.
+           board-mode just stops the page itself from scrolling by
+           default; overflow-y stays as a safety net for extreme
+           cases (content genuinely taller than the screen) rather
+           than clipping content.
+        ================================================== */
+        body.board-mode {
+            overflow-y: auto;
+            overflow-x: hidden;
+            height: 100vh;
+        }
+
+        /* ==================================================
+           ON-LOAN STAFF — a staff member assigned to a team that
+           isn't their home_team. Cell/card is coloured with their
+           HOME team's colour (not the team they're currently
+           helping), plus a small tag and dashed outline so it reads
+           as "visiting" at a glance, not a data error.
+        ================================================== */
+        .staff-card.on-loan .position-code,
+        .staff-card.on-loan .staff-photo,
+        .team-table td.on-loan {
+            outline: 2px dashed rgba(255,255,255,0.9);
+            outline-offset: -2px;
+        }
+
+        .loan-tag {
+            display: inline-block;
+            font-size: 9.5px;
+            font-weight: bold;
+            letter-spacing: .5px;
+            border: 1px solid rgba(255,255,255,0.85);
+            border-radius: 3px;
+            padding: 0 3px;
+            margin-left: 4px;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
     </style>
 
 </head>
@@ -1507,9 +2001,18 @@
 
             <button
                 class="fullscreen-button"
+                id="rotateToggleBtn"
+                onclick="toggleRotationMode()">
+
+                Rotating&hellip;
+
+            </button>
+
+            <button
+                class="fullscreen-button"
                 onclick="toggleFullscreen()">
 
-                FULL SCREEN
+                &#9974; FULL SCREEN
 
             </button>
 
@@ -1518,6 +2021,8 @@
     </header>
 
     <div id="connStatus" class="conn-status" style="display:none;"></div>
+
+    <!-- rotation dots row removed — .board-nav-arrow (flanking each shift-column) replaced it -->
 
     <!-- ================================================
          MAIN ROSTER BOARD (public, no login needed)
@@ -1532,9 +2037,11 @@
 
     <main id="view-login" class="app-view">
         <div class="app-login-wrap app-card">
-            <h2 style="margin-bottom:4px;">Sign in</h2>
+            <h2 style="margin-bottom:4px;">Leader sign in</h2>
             <p style="color:#777;font-size:13px;margin-top:0;margin-bottom:18px;">
-                Staff and admin accounts share this form. New staff: use "Create account" with the email your admin registered for you.
+                Only leaders have accounts on this system &mdash; leaders can update who's on duty. Everyone else just
+                views the public duty board, no account needed. New leader: use "Create account" with the email an
+                existing leader registered for you as a leader in the Admin Panel.
             </p>
             <div id="loginMsg"></div>
             <div class="app-field"><label>Email</label><input type="email" id="loginEmail" placeholder="you@tcc.co.tz"></div>
@@ -1548,40 +2055,7 @@
 
 
     <!-- ================================================
-         STAFF DASHBOARD
-    ================================================= -->
-
-    <main id="view-staff" class="app-view">
-        <h2 style="margin-bottom:16px;">My Duty</h2>
-        <div id="myDutyCard" class="app-card" style="margin-bottom:24px;"></div>
-
-        <h3 style="margin-bottom:10px;">Full Roster</h3>
-        <div class="app-tabs" id="staffTeamTabs"></div>
-        <div id="staffRosterBody"></div>
-
-        <h3 style="margin:26px 0 10px;">Request Leave</h3>
-        <div class="app-card" style="max-width:480px;">
-            <div id="leaveReqMsg"></div>
-            <div class="app-field"><label>Type</label>
-                <select id="leaveType">
-                    <option value="vacation">Vacation</option>
-                    <option value="sick">Sick</option>
-                    <option value="family">Family</option>
-                    <option value="permission">Permission / Other</option>
-                </select>
-            </div>
-            <div class="app-grid-2">
-                <div class="app-field"><label>Start date</label><input type="date" id="leaveStart"></div>
-                <div class="app-field"><label>End date</label><input type="date" id="leaveEnd"></div>
-            </div>
-            <div class="app-field"><label>Note (optional)</label><textarea id="leaveNote" rows="2"></textarea></div>
-            <button class="app-btn" onclick="StaffView.submitLeave()">Submit request</button>
-        </div>
-    </main>
-
-
-    <!-- ================================================
-         ADMIN PANEL
+         ADMIN PANEL (leaders only)
     ================================================= -->
 
     <main id="view-admin" class="app-view">
@@ -1616,9 +2090,18 @@
                             <option value="OTHER">Other / Reserve</option>
                         </select>
                     </div>
+                    <div class="app-field"><label>Home team</label>
+                        <select id="newStaffHomeTeam">
+                            <option value="">&mdash; Unassigned &mdash;</option>
+                            <option value="A">Shift A</option>
+                            <option value="B">Shift B</option>
+                            <option value="C">Shift C</option>
+                            <option value="D">Shift D</option>
+                        </select>
+                    </div>
                     <div class="app-field"><label>Phone</label><input id="newStaffPhone"></div>
                     <div class="app-field"><label>Photo</label><input id="newStaffPhoto" type="file" accept="image/*"></div>
-                    <div class="app-field"><label>&nbsp;</label><label style="font-weight:normal;"><input type="checkbox" id="newStaffAdmin"> Is admin</label></div>
+                    <div class="app-field"><label>&nbsp;</label><label style="font-weight:normal;"><input type="checkbox" id="newStaffAdmin"> Is a leader (can sign in &amp; edit the roster)</label></div>
                 </div>
                 <button class="app-btn" onclick="AdminView.addStaff()">Add staff member</button>
             </div>
@@ -1627,9 +2110,10 @@
                 <h3 style="margin-bottom:8px;">Bulk import staff</h3>
                 <p style="font-size:13px;color:#777;margin-top:0;">
                     Paste rows copied from Excel/Sheets, or upload a .csv file. One staff member per line, columns
-                    in this order: <b>Full name, Email, Job title, Role code, Phone</b>. Role code must be one of
-                    MO, PO, MM, PM, ET, OTHER &mdash; a header row is optional and auto-skipped. Photos aren't part
-                    of bulk import; add those individually above afterward if needed.
+                    in this order: <b>Full name, Email, Job title, Role code, Phone, Home team (optional)</b>. Role
+                    code must be one of MO, PO, MM, PM, ET, OTHER; home team, if included, must be A/B/C/D &mdash;
+                    a header row is optional and auto-skipped. Photos aren't part of bulk import; add those
+                    individually above afterward if needed.
                 </p>
                 <div id="bulkImportMsg"></div>
                 <div class="app-field">
@@ -1638,8 +2122,8 @@
                 </div>
                 <div class="app-field">
                     <label>Staff rows</label>
-                    <textarea id="bulkStaffText" rows="6" placeholder="Jane Doe, jane@tcc.co.tz, Maker Operator, MO, 0712345678
-John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
+                    <textarea id="bulkStaffText" rows="6" placeholder="Jane Doe, jane@tcc.co.tz, Maker Operator, MO, 0712345678, A
+John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432, D"></textarea>
                 </div>
                 <button class="app-btn" onclick="AdminView.bulkImportStaff()">Import staff</button>
             </div>
@@ -1654,6 +2138,27 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                 </p>
                 <button class="app-btn" style="background:var(--accent); color:#2b2b2b;" onclick="AdminView.autoGenerate()">Auto-generate roster</button>
                 <div id="autoGenMsg" style="margin-top:10px;"></div>
+            </div>
+
+            <div class="app-card" style="margin-bottom:14px;">
+                <div style="display:flex; gap:14px; flex-wrap:wrap; align-items:flex-end;">
+                    <div class="app-field" style="margin-bottom:0;">
+                        <label>Search staff</label>
+                        <input type="text" id="staffSearch" placeholder="Type a name&hellip;" oninput="AdminView.renderStaffDirectoryRows()">
+                    </div>
+                    <div class="app-field" style="margin-bottom:0;">
+                        <label>Filter by role</label>
+                        <select id="staffRoleFilter" onchange="AdminView.renderStaffDirectoryRows()">
+                            <option value="">All roles</option>
+                            <option value="MO">MO &mdash; Maker Operator</option>
+                            <option value="PO">PO &mdash; Packer Operator</option>
+                            <option value="MM">MM &mdash; Maker Mechanic</option>
+                            <option value="PM">PM &mdash; Packer Mechanic</option>
+                            <option value="ET">ET &mdash; Electrician</option>
+                            <option value="OTHER">OTHER</option>
+                        </select>
+                    </div>
+                </div>
             </div>
 
             <div id="staffDirectory"></div>
@@ -1691,33 +2196,13 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
         <div id="admin-rotation" class="admin-tab-panel">
             <div class="app-card" style="max-width:480px; margin-bottom:18px;">
                 <h3 style="margin-bottom:12px;">Rotation cycle</h3>
-                <p style="font-size:13px;color:#777;">Pattern: each team runs DAY &rarr; NIGHT &rarr; OFF &rarr; OFF, staggered by one day, so exactly one team is on Day and one on Night at any time.</p>
+                <p style="font-size:13px;color:#777;">Pattern: each team works 2 consecutive days on one shift, 2 days OFF, then 2 consecutive days on the OTHER shift, then 2 more days OFF &mdash; an 8-day cycle. Exactly one team is on Day and one on Night at any time.</p>
                 <div class="app-field"><label>Cycle start date</label><input type="date" id="cycleStartInput"></div>
                 <button class="app-btn" onclick="AdminView.saveRotation()">Save</button>
                 <div id="rotationMsg" style="margin-top:10px;"></div>
             </div>
-            <div class="app-card" style="max-width:480px;">
-                <h3 style="margin-bottom:12px;">Accountable person per shift</h3>
-                <div class="app-field"><label>Shift A</label><input id="accA"></div>
-                <div class="app-field"><label>Shift B</label><input id="accB"></div>
-                <div class="app-field"><label>Shift C</label><input id="accC"></div>
-                <div class="app-field"><label>Shift D</label><input id="accD"></div>
-                <button class="app-btn" onclick="AdminView.saveAccountable()">Save</button>
-                <div id="accountableMsg" style="margin-top:10px;"></div>
-            </div>
         </div>
     </main>
-
-
-    <!-- ================================================
-         FOOTER
-    ================================================= -->
-
-    <footer class="board-footer">
-
-        THE RESPONSIBLE PERSON TO UPDATE THIS BOARD
-
-    </footer>
 
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
@@ -1737,8 +2222,8 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
             SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhmZW5lcGRydHFrcXhxaWNxdWtoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQwNjk2NDgsImV4cCI6MjA4OTY0NTY0OH0.4fSCyY7TxTfJN3T-43eesTK8YUG2hUyBS97BeiUUTJE',
             CLOUDINARY_CLOUD_NAME: 'YOUR-CLOUD-NAME',
             CLOUDINARY_UPLOAD_PRESET: 'YOUR-UNSIGNED-PRESET',
-            DAY_SHIFT_START: '08:00',
-            NIGHT_SHIFT_START: '18:01',
+            DAY_SHIFT_START: '07:00',
+            NIGHT_SHIFT_START: '19:01',
         };
 
         // Only staff with an official TCC email may create an account.
@@ -1781,8 +2266,8 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
         const ROTATION_FALLBACK_DATE = '2026-01-01';
 
         function effectiveRotationDateString(){
-            // The night shift (18:01-07:59) spans two EAT calendar dates. Before
-            // the morning shift starts (i.e. it's still the small hours), we're
+            // The night shift (19:01-06:59) spans two EAT calendar dates. Before
+            // the day shift starts (i.e. it's still the small hours), we're
             // in the tail end of the PREVIOUS calendar day's night shift, so the
             // rotation lookup must still use yesterday's date — otherwise the
             // team on duty would get swapped out the instant the clock crosses
@@ -1809,36 +2294,49 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
         }
 
         /* ============================================================
-           SLOT TEMPLATE — mirrors this exact board's sections.
-           (Single electrician per shift, "Others" = reserve/backup staff
-           shown in the bottom status grid.) This list must stay in sync
-           with the assignment_slots seed data in tcc_schema.sql.
+           SLOT TEMPLATE — 5 whole-shift roles (one MO, PO, MM, PM, ET
+           per team — not per-machine/per-line anymore), plus 2 reserve/
+           backup slots that feed the "OTHERS" status box. The machines
+           and FM03/FM04 are shown as plain reference labels on the
+           board (no staff tied to them individually) — see
+           MACHINE_LABELS below. This list must stay in sync with the
+           assignment_slots seed data in tcc_schema.sql.
            ============================================================ */
         const SLOT_TEMPLATE = [
-            {id:'fm', section:'fm', label:'FM03 & FM04', role_code:'MO', sort_order:0},
-            {id:'mp22mo', section:'operators', machine:'MP22', label:'MP22', role_code:'MO', sort_order:1},
-            {id:'mp22po', section:'operators', machine:'MP22', label:'MP22', role_code:'PO', sort_order:2},
-            {id:'mp23mo', section:'operators', machine:'MP23', label:'MP23', role_code:'MO', sort_order:3},
-            {id:'mp23po', section:'operators', machine:'MP23', label:'MP23', role_code:'PO', sort_order:4},
-            {id:'mp26mo', section:'operators', machine:'MP26', label:'MP26', role_code:'MO', sort_order:5},
-            {id:'mp26po', section:'operators', machine:'MP26', label:'MP26', role_code:'PO', sort_order:6},
-            {id:'mp28mo', section:'operators', machine:'MP28', label:'MP28', role_code:'MO', sort_order:7},
-            {id:'mp28po', section:'operators', machine:'MP28', label:'MP28', role_code:'PO', sort_order:8},
-            {id:'mp29mo', section:'operators', machine:'MP29', label:'MP29', role_code:'MO', sort_order:9},
-            {id:'mp29po', section:'operators', machine:'MP29', label:'MP29', role_code:'PO', sort_order:10},
-            {id:'mp30mo', section:'operators', machine:'MP30', label:'MP30', role_code:'MO', sort_order:11},
-            {id:'mp30po', section:'operators', machine:'MP30', label:'MP30', role_code:'PO', sort_order:12},
-            {id:'lp1mm', section:'mechanics', pairing:'LINE PAIRING 1', machines:['MP26','MP28'], label:'Line Pairing 1', role_code:'MM', sort_order:13},
-            {id:'lp1pm', section:'mechanics', pairing:'LINE PAIRING 1', machines:['MP26','MP28'], label:'Line Pairing 1', role_code:'PM', sort_order:14},
-            {id:'lp2mm', section:'mechanics', pairing:'LINE PAIRING 2', machines:['MP22','MP23'], label:'Line Pairing 2', role_code:'MM', sort_order:15},
-            {id:'lp2pm', section:'mechanics', pairing:'LINE PAIRING 2', machines:['MP22','MP23'], label:'Line Pairing 2', role_code:'PM', sort_order:16},
-            {id:'lp3mm', section:'mechanics', pairing:'LINE PAIRING 3', machines:['MP29','MP30'], label:'Line Pairing 3', role_code:'MM', sort_order:17},
-            {id:'lp3pm', section:'mechanics', pairing:'LINE PAIRING 3', machines:['MP29','MP30'], label:'Line Pairing 3', role_code:'PM', sort_order:18},
-            {id:'filt', section:'filter_makers', label:'Filter Maker', role_code:'MM', sort_order:19},
-            {id:'elec', section:'electricians', label:'Electrician', role_code:'ET', sort_order:20},
-            {id:'oth1', section:'others', label:'Reserve / Backup 1', role_code:'OTHER', sort_order:21},
-            {id:'oth2', section:'others', label:'Reserve / Backup 2', role_code:'OTHER', sort_order:22},
+            // The 5-role "TEAM" table — unchanged, still the only place
+            // Team Leader is chosen from (one flag across these 5).
+            {id:'mo', section:'roles', label:'Maker Operator', role_code:'MO', sort_order:0},
+            {id:'po', section:'roles', label:'Packer Operator', role_code:'PO', sort_order:1},
+            {id:'mm', section:'roles', label:'Maker Mechanic', role_code:'MM', sort_order:2},
+            {id:'pm', section:'roles', label:'Packer Mechanic', role_code:'PM', sort_order:3},
+            {id:'et', section:'roles', label:'Electrician', role_code:'ET', sort_order:4},
+
+            // FM03/FM04 — one person, always MO.
+            {id:'fm', section:'fm', machine:'FM03 / FM04', label:'FM03 / FM04', role_code:'MO', sort_order:5},
+
+            // Each machine gets its own MO + PO — separate from (and in
+            // addition to) the team-wide roles above.
+            {id:'mp22mo', section:'machine', machine:'MP22', label:'MP22', role_code:'MO', sort_order:6},
+            {id:'mp22po', section:'machine', machine:'MP22', label:'MP22', role_code:'PO', sort_order:7},
+            {id:'mp23mo', section:'machine', machine:'MP23', label:'MP23', role_code:'MO', sort_order:8},
+            {id:'mp23po', section:'machine', machine:'MP23', label:'MP23', role_code:'PO', sort_order:9},
+            {id:'mp26mo', section:'machine', machine:'MP26', label:'MP26', role_code:'MO', sort_order:10},
+            {id:'mp26po', section:'machine', machine:'MP26', label:'MP26', role_code:'PO', sort_order:11},
+            {id:'mp28mo', section:'machine', machine:'MP28', label:'MP28', role_code:'MO', sort_order:12},
+            {id:'mp28po', section:'machine', machine:'MP28', label:'MP28', role_code:'PO', sort_order:13},
+            {id:'mp29mo', section:'machine', machine:'MP29', label:'MP29', role_code:'MO', sort_order:14},
+            {id:'mp29po', section:'machine', machine:'MP29', label:'MP29', role_code:'PO', sort_order:15},
+            {id:'mp30mo', section:'machine', machine:'MP30', label:'MP30', role_code:'MO', sort_order:16},
+            {id:'mp30po', section:'machine', machine:'MP30', label:'MP30', role_code:'PO', sort_order:17},
+
+            {id:'oth1', section:'others', label:'Reserve / Backup 1', role_code:'OTHER', sort_order:18},
+            {id:'oth2', section:'others', label:'Reserve / Backup 2', role_code:'OTHER', sort_order:19},
         ];
+
+        // Reference list only — which machines get their own MO/PO boxes,
+        // in board order (4 across, then the remaining 2 + FM below).
+        const MACHINE_LABELS = ['MP22','MP23','MP26','MP28','MP29','MP30'];
+        const FM_LABEL = 'FM03 / FM04';
 
         const SHIFT_LETTERS = ['A','B','C','D'];
         const ROLE_LABELS = { MO:'Maker Operator', PO:'Packer Operator', MM:'Maker Mechanic', PM:'Packer Mechanic', ET:'Electrician' };
@@ -1902,19 +2400,6 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                 const { error } = await sb.from('rotation_config').update({cycle_start_date:dateStr}).eq('id',1);
                 if (error) throw error;
             },
-            async getAccountablePersons(){
-                return safeRead(async ()=>{
-                    const { data, error } = await sb.from('shift_teams').select('letter, accountable_person');
-                    if (error) throw error;
-                    const map = {};
-                    (data||[]).forEach(r=>{ map[r.letter] = r.accountable_person || ''; });
-                    return map;
-                }, {});
-            },
-            async saveAccountablePerson(teamLetter, name){
-                const { error } = await sb.from('shift_teams').update({ accountable_person: name }).eq('letter', teamLetter);
-                if (error) throw error;
-            },
             async getLeave(){
                 return safeRead(async ()=>{
                     const { data, error } = await sb.from('leave_records').select('*, staff(full_name)').order('start_date');
@@ -1932,6 +2417,10 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
             async addStaff(rec){
                 const { data, error } = await sb.from('staff').insert(rec).select().single();
                 if (error) throw error; return data;
+            },
+            async updateStaffHomeTeam(id, homeTeam){
+                const { error } = await sb.from('staff').update({ home_team: homeTeam || null }).eq('id', id);
+                if (error) throw error;
             },
             async autoGenerateRoster(){
                 const { data: teams, error: teamsErr } = await sb.from('shift_teams').select('id, letter');
@@ -1991,6 +2480,18 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                     { onConflict: 'shift_team_id,slot_id' }
                 );
                 if (error) throw error;
+                // Only one team leader per shift: marking this slot's person as
+                // TL clears the flag on the other 4 role slots for this team.
+                if (isTeamLeader){
+                    const otherRoleSlotIds = SLOT_TEMPLATE.filter(s=>s.section==='roles' && s.id!==slotId).map(s=>s.id);
+                    if (otherRoleSlotIds.length){
+                        const { error: clearErr } = await sb.from('assignments')
+                            .update({ is_team_leader: false })
+                            .eq('shift_team_id', team.id)
+                            .in('slot_id', otherRoleSlotIds);
+                        if (clearErr) throw clearErr;
+                    }
+                }
             },
             async uploadPhoto(file){
                 if (!file) return null;
@@ -2005,22 +2506,21 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
         };
 
         /* ============================================================
-           ROTATION LOGIC — DAY -> NIGHT -> OFF -> OFF, staggered so
-           exactly one team is Day and one is Night on any given date.
+           ROTATION LOGIC — 8-day cycle: each team works 2 consecutive
+           days on one shift, 2 days OFF, then 2 consecutive days on the
+           OTHER shift, then 2 more days OFF, and repeats. At any point
+           exactly one team is DAY, one is NIGHT, and two are OFF.
            ============================================================ */
         function computeTeamStatus(dateStr, cycleStart){
             const d = new Date(dateStr+'T00:00:00');
             const s = new Date(cycleStart+'T00:00:00');
             const diffDays = Math.floor((d - s) / 86400000);
-            let cycle = diffDays % 4; if (cycle < 0) cycle += 4;
-            // Every shift is buffered by an OFF day on both sides — nobody ever
-            // goes straight from a NIGHT shift into a MORNING shift (or back)
-            // on consecutive calendar days with zero rest between them.
+            let cycle = diffDays % 8; if (cycle < 0) cycle += 8;
             const patterns = {
-                A: ['OFF','MORNING','OFF','NIGHT'],
-                B: ['NIGHT','OFF','MORNING','OFF'],
-                C: ['OFF','NIGHT','OFF','MORNING'],
-                D: ['MORNING','OFF','NIGHT','OFF'],
+                A: ['DAY','DAY','OFF','OFF','NIGHT','NIGHT','OFF','OFF'],
+                B: ['NIGHT','NIGHT','OFF','OFF','DAY','DAY','OFF','OFF'],
+                C: ['OFF','OFF','DAY','DAY','OFF','OFF','NIGHT','NIGHT'],
+                D: ['OFF','OFF','NIGHT','NIGHT','OFF','OFF','DAY','DAY'],
             };
             const result = {};
             for (const team of SHIFT_LETTERS) result[team] = patterns[team][cycle];
@@ -2028,7 +2528,7 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
         }
         function currentlyActiveWindow(){
             const hhmm = eatTimeString();
-            if (hhmm >= CONFIG.DAY_SHIFT_START && hhmm < CONFIG.NIGHT_SHIFT_START) return 'MORNING';
+            if (hhmm >= CONFIG.DAY_SHIFT_START && hhmm < CONFIG.NIGHT_SHIFT_START) return 'DAY';
             return 'NIGHT';
         }
 
@@ -2049,7 +2549,7 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                 const { data, error } = await sb.auth.signInWithPassword({ email, password });
                 if (error){ msg.innerHTML = `<div class="app-msg error">${error.message}</div>`; return; }
                 await loadStaffProfile(data.user);
-                afterLogin();
+                afterLogin(true);
             },
             async signUp(){
                 const email = document.getElementById('loginEmail').value.trim();
@@ -2064,12 +2564,16 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                 const { data, error } = await sb.auth.signUp({ email, password });
                 if (error){ msg.innerHTML = `<div class="app-msg error">${error.message}</div>`; return; }
                 const { data: staffRow } = await sb.from('staff').select('*').eq('email', email).single();
-                if (staffRow && !staffRow.auth_user_id){
-                    await sb.from('staff').update({ auth_user_id: data.user.id }).eq('id', staffRow.id);
-                }
                 if (!staffRow){
-                    msg.innerHTML = '<div class="app-msg error">That email isn\'t registered as staff yet. Ask your admin to add you in the Admin Panel first, then create your account.</div>';
+                    msg.innerHTML = '<div class="app-msg error">That email isn\'t registered as a leader yet. Ask an existing leader to add you as a leader in the Admin Panel first, then create your account.</div>';
                     return;
+                }
+                if (!staffRow.is_admin){
+                    msg.innerHTML = '<div class="app-msg error">Only leaders have accounts on this system. Ask an existing leader to give you leader access if you should have one &mdash; everyone else just views the public duty board.</div>';
+                    return;
+                }
+                if (!staffRow.auth_user_id){
+                    await sb.from('staff').update({ auth_user_id: data.user.id }).eq('id', staffRow.id);
                 }
                 msg.innerHTML = '<div class="app-msg ok">Account created. Check your email to confirm, then sign in.</div>';
             },
@@ -2087,11 +2591,23 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
         }
 
 
-        function afterLogin(){
+        function afterLogin(navigateToAdmin){
             document.getElementById('loginMsg').innerHTML = '';
+            if (!session.staff || !session.staff.is_admin){
+                alert('This account does not have leader access. Ask an existing leader to give you leader access if you should have one.');
+                Auth.signOut();
+                return;
+            }
             renderNav();
-            if (session.staff && session.staff.is_admin){ showView('admin'); AdminView.init(); }
-            else { showView('staff'); StaffView.init(); }
+            // Only an explicit, deliberate sign-in (the login form) jumps to the
+            // Admin Panel. Restoring an already-open session on page load (or a
+            // background auth refresh) must NOT hijack the screen away from the
+            // public duty board — anyone opening the app should land on the
+            // board first, exactly like a logged-out viewer would.
+            if (navigateToAdmin){
+                showView('admin');
+                AdminView.init();
+            }
         }
 
         /* ============================================================
@@ -2101,22 +2617,80 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
             document.getElementById('rosterBoard').classList.toggle('active', name==='board');
             document.querySelectorAll('.app-view').forEach(v=>v.classList.remove('active'));
             if (name !== 'board') document.getElementById('view-'+name).classList.add('active');
+            document.body.classList.toggle('board-mode', name==='board');
+            if (name === 'board') fitBoardToScreen();
         }
+
+        /* ============================================================
+           FIT-TO-SCREEN — sets a min-height on each column's
+           .duty-board-body equal to the space actually available
+           below the header, so its justify-content: space-between
+           stretches the gaps between the machines/team/status
+           sections to fill the screen exactly, at full text size —
+           no shrinking. If content is naturally taller than that
+           (a very short window), min-height simply has no effect
+           and the page scrolls instead (body.board-mode's
+           overflow-y is the safety net for that case).
+           ============================================================ */
+        /* ============================================================
+           FIT-TO-SCREEN — first tries to STRETCH: if a column's content
+           is naturally shorter than the space available, min-height
+           forces .duty-board-body to fill it and justify-content:
+           space-between spreads the gaps, at full text size, no
+           scrolling. If content is naturally TALLER than the available
+           space (a lot of machines/staff to show on a shorter screen),
+           stretching can't help — so it falls back to a gentle shrink
+           (transform: scale, floored at 0.8 so text stays legible)
+           instead of leaving it to scroll, since "no scrolling" is the
+           actual goal here.
+           ============================================================ */
+        function fitBoardToScreen(){
+            const board = document.getElementById('rosterBoard');
+            if (!board || !board.classList.contains('active')) return;
+            const bodies = board.querySelectorAll('.duty-board-body');
+            bodies.forEach(b => { b.style.minHeight = '0px'; b.style.transform = 'none'; });
+            bodies.forEach(b => {
+                // Measure from THIS body's own top (below its column's shift-name
+                // header), not the outer board's top — otherwise available height
+                // is overestimated by the header's height and min-height overshoots,
+                // pushing content down and leaving an unused gap under the header.
+                const top = b.getBoundingClientRect().top;
+                const available = window.innerHeight - top - 8;
+                if (available <= 100) return;
+                const natural = b.scrollHeight;
+                if (natural <= available){
+                    b.style.minHeight = available + 'px';
+                } else {
+                    const scale = Math.max(available / natural, 0.8);
+                    b.style.transformOrigin = 'top center';
+                    b.style.transform = `scale(${scale})`;
+                }
+            });
+        }
+
+        let fitResizeTimer = null;
+        window.addEventListener('resize', ()=>{
+            clearTimeout(fitResizeTimer);
+            fitResizeTimer = setTimeout(fitBoardToScreen, 150);
+        });
 
         function renderNav(){
             const nav = document.getElementById('navAuth');
-            let html = `<button class="nav-btn" onclick="showView('board')">Duty Board</button>`;
+            let html = '';
             if (!session.user){
-                html += `<button class="nav-btn accent" onclick="showView('login')">Sign in</button>`;
+                // General/staff view: only a way for a leader to sign in.
+                // Duty Board, Admin Panel, Log out, and the Rotating toggle
+                // are leader tools and have no reason to be visible here —
+                // a viewer is already looking at the duty board.
+                html = `<button class="nav-btn accent" onclick="showView('login')">&#128100; Leader Sign in</button>`;
             } else {
-                if (session.staff && session.staff.is_admin){
-                    html += `<button class="nav-btn accent" onclick="showView('admin'); AdminView.init();">Admin Panel</button>`;
-                } else {
-                    html += `<button class="nav-btn accent" onclick="showView('staff'); StaffView.init();">My Duty</button>`;
-                }
-                html += `<button class="nav-btn" onclick="Auth.signOut()">Log out (${session.staff ? session.staff.full_name : session.user.email})</button>`;
+                html = `<button class="nav-btn" onclick="showView('board')">&#128203; Duty Board</button>`;
+                html += `<button class="nav-btn accent" onclick="showView('admin'); AdminView.init();">&#128736;&#65039; Admin Panel</button>`;
+                html += `<button class="nav-btn" onclick="Auth.signOut()">&#128682; Log out (${session.staff ? session.staff.full_name : session.user.email})</button>`;
             }
             nav.innerHTML = html;
+            const rotateBtn = document.getElementById('rotateToggleBtn');
+            if (rotateBtn) rotateBtn.style.display = session.user ? '' : 'none';
             showView('board');
         }
 
@@ -2134,7 +2708,6 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
         }
 
         function staffCardHtml(slot, staff, teamLetter, isTeamLeader, roleLabel){
-            const cardClass = 'card-' + teamLetter.toLowerCase();
             const photo = staff && staff.photo_url
                 ? `<img src="${staff.photo_url}" alt="">`
                 : `<div class="photo-placeholder">${staff ? initials(staff.full_name) : slot.role_code}</div>`;
@@ -2144,41 +2717,24 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                     <div class="empty-space"></div>
                   </div>`;
             }
+            // If this person's home team differs from the team they're
+            // currently placed in, colour the card with their HOME team's
+            // colour (not this column's colour) and tag it, so a leader
+            // switching someone in to help is unmistakable, not mistaken
+            // for a data error.
+            const onLoan = staff.home_team && staff.home_team !== teamLetter;
+            const colourTeam = onLoan ? staff.home_team : teamLetter;
+            const cardClass = 'card-' + colourTeam.toLowerCase() + (onLoan ? ' on-loan' : '');
+            const loanTag = onLoan ? ` <span class="loan-tag">TEAM ${staff.home_team}</span>` : '';
             return `<div class="staff-card ${cardClass}">
                 <div class="position-code">${slot.role_code}</div>
                 <div class="staff-photo">${photo}</div>
                 <div class="staff-details">
-                    <span class="staff-name">${staff.full_name}${isTeamLeader?' (TL)':''}</span>
+                    <span class="staff-name">${staff.full_name}${isTeamLeader?' (TL)':''}${loanTag}</span>
                     <span class="staff-role">${roleLabel || staff.job_title || ''}</span>
                     ${staff.phone ? `<span class="staff-phone">${staff.phone}</span>` : ''}
                 </div>
             </div>`;
-        }
-
-        function machineCardHtml(machine, slots, assignments, staffList, teamLetter){
-            const rows = slots.map(sl=>{
-                const a = assignments.find(x=>x.slot_id===sl.id);
-                const staff = findStaff(a, staffList);
-                return staffCardHtml(sl, staff, teamLetter, a && a.is_team_leader, ROLE_LABELS[sl.role_code]);
-            }).join('');
-            return `<div class="machine-card"><div class="machine-title">${machine}</div>${rows}</div>`;
-        }
-
-        function lineMachinesHtml(pairing, machines, slots, assignments, staffList, teamLetter){
-            // Each row pairs one machine label with its own staff cell in the SAME
-            // grid row, so a wrapped 2-line name can never drift the label out of sync.
-            const rows = slots.map((sl, i)=>{
-                const a = assignments.find(x=>x.slot_id===sl.id);
-                const staff = findStaff(a, staffList);
-                const card = staffCardHtml(sl, staff, teamLetter, a && a.is_team_leader, ROLE_LABELS[sl.role_code]);
-                const label = machines[i] || machines[machines.length-1];
-                return `<div class="lp-row">
-                    <div class="machine-label">${label}</div>
-                    <div class="lp-staff-cell">${card}</div>
-                </div>`;
-            }).join('');
-            return `<div class="section-header">${pairing}</div>
-                <div class="line-pairing-grid">${rows}</div>`;
         }
 
         function leaveContentHtml(leaveList, staffList, type, teamAssignments){
@@ -2208,37 +2764,86 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
             return entries;
         }
 
-        function shiftColumnHtml(teamLetter, statusWord, isActiveNow, isNextUp, nextUpWord, slots, staffList, accountable, assignments, leaveList){
-            const fmSlot = slots.find(s=>s.section==='fm');
-            const fmAssignment = assignments.find(x=>x.slot_id===fmSlot.id);
-            const fmStaff = findStaff(fmAssignment, staffList);
-            const fmHtml = `<div class="single-staff-row">${staffCardHtml(fmSlot, fmStaff, teamLetter, false, ROLE_LABELS['MO'])}</div>`;
+        // One machine (or FM) box: shows its MO row, and its PO row if it
+        // has one (FM only has MO). Each name is coloured by that
+        // PERSON's home team — same on-loan logic as the team table.
+        // One machine (or FM) box's staff rows, using the same rich
+        // photo-card look as the rest of the app (avatar, name, role,
+        // phone) rather than a bare line of text.
+        function machineBoxSlotsHtml(codes, slotSection, machineName, slots, assignments, staffList, teamLetter){
+            return codes.map(code=>{
+                const sl = slots.find(s=>s.section===slotSection && s.machine===machineName && s.role_code===code);
+                const a = assignments.find(x=>x.slot_id===sl.id);
+                const staff = findStaff(a, staffList);
+                return staffCardHtml(sl, staff, teamLetter, false, ROLE_LABELS[code]);
+            }).join('');
+        }
 
-            const machineNames = ['MP22','MP23','MP26','MP28','MP29','MP30'];
-            const machinesHtml = machineNames.map(m=>{
-                const mSlots = slots.filter(s=>s.section==='operators' && s.machine===m);
-                return machineCardHtml(m, mSlots, assignments, staffList, teamLetter);
+        function shiftColumnHtml(teamLetter, statusWord, isActiveNow, isNextUp, nextUpWord, slots, staffList, assignments, leaveList){
+            // Machines + FM each show their own MO (and PO, except FM)
+            // right on the board now, in the same photo-card style used
+            // elsewhere — a bordered card with a colour-accented left
+            // edge, a title bar (+ decorative "Online" badge), and full
+            // staff rows (avatar, name, role, phone) beneath it.
+            const MACHINE_ACCENTS = ['#3aa65a','#3b82c9','#8b5fc9','#e08a2e','#1fa8a0','#d64550'];
+            const machineCardHtml = (m, i) => `<div class="machine-card">
+                <div class="machine-box" style="--machine-accent:${MACHINE_ACCENTS[i % MACHINE_ACCENTS.length]};">
+                    <div class="machine-box-title">${m} <span class="online-badge">Online</span></div>
+                    ${machineBoxSlotsHtml(['MO','PO'], 'machine', m, slots, assignments, staffList, teamLetter)}
+                </div>
+            </div>`;
+            const machinesTopHtml = MACHINE_LABELS.slice(0,4).map(machineCardHtml).join('');
+            const machinesSecondRowHtml = MACHINE_LABELS.slice(4).map((m,i)=>machineCardHtml(m,i+4)).join('')
+                + `<div class="fm-card">
+                    <div class="machine-box" style="--machine-accent:#5b6470;">
+                        <div class="machine-box-title">${FM_LABEL} <span class="online-badge">Online</span></div>
+                        ${machineBoxSlotsHtml(['MO'], 'fm', FM_LABEL, slots, assignments, staffList, teamLetter)}
+                    </div>
+                </div>`;
+
+            // The whole team is just 5 roles now — one MO, PO, MM, PM, ET —
+            // shown as a real table: role codes across the top (fixed
+            // colours per ROLE, matching the reference design), one name
+            // cell per role below (coloured by that PERSON's home team, so
+            // an on-loan helper still reads correctly), then a TL row.
+            const ROLE_ORDER = ['MO','PO','MM','PM','ET'];
+            const ROLE_HEADER_STYLE = {
+                MO: {bg:'linear-gradient(135deg,#4f8fd1,#2f66a8)', icon:'\u{1F477}'},
+                PO: {bg:'linear-gradient(135deg,#5cb87a,#358a55)', icon:'\u{1F527}'},
+                MM: {bg:'linear-gradient(135deg,#9b7fd4,#6f4fae)', icon:'\u2699\uFE0F'},
+                PM: {bg:'linear-gradient(135deg,#eb9d4e,#cc7a20)', icon:'\u{1F4CB}'},
+                ET: {bg:'linear-gradient(135deg,#3fb6ae,#1d8a83)', icon:'\u26A1'},
+            };
+            const roleAssignments = ROLE_ORDER.map(code=>{
+                const sl = slots.find(s=>s.role_code===code && s.section==='roles');
+                const a = assignments.find(x=>x.slot_id===sl.id);
+                const staff = findStaff(a, staffList);
+                return { code, sl, a, staff };
+            });
+
+            const headerRowHtml = roleAssignments.map(r =>
+                `<th style="background:${ROLE_HEADER_STYLE[r.code].bg};">${ROLE_HEADER_STYLE[r.code].icon} ${r.code}</th>`).join('');
+
+            const nameRowHtml = roleAssignments.map(r=>{
+                if (!r.staff){
+                    return `<td style="color:#999;font-weight:normal;">&mdash;</td>`;
+                }
+                const onLoan = r.staff.home_team && r.staff.home_team !== teamLetter;
+                const colourTeam = onLoan ? r.staff.home_team : teamLetter;
+                const loanTag = onLoan ? `<span class="loan-tag" style="border-color:white;">TEAM ${r.staff.home_team}</span>` : '';
+                return `<td class="shift-${colourTeam.toLowerCase()}${onLoan?' on-loan':''}" style="color:white;">
+                    ${r.staff.full_name}${loanTag}
+                    <span class="team-name-sub">${ROLE_LABELS[r.code] || ''}${r.staff.phone ? ' &middot; '+r.staff.phone : ''}</span>
+                </td>`;
             }).join('');
 
-            const pairings = [
-                {name:'LINE PAIRING 1', machines:['MP26','MP28']},
-                {name:'LINE PAIRING 2', machines:['MP22','MP23']},
-                {name:'LINE PAIRING 3', machines:['MP29','MP30']},
-            ];
-            const mechanicsHtml = pairings.map(p=>{
-                const pSlots = slots.filter(s=>s.section==='mechanics' && s.pairing===p.name);
-                return lineMachinesHtml(p.name, p.machines, pSlots, assignments, staffList, teamLetter);
-            }).join('');
+            const tlRowHtml = roleAssignments.map(r =>
+                `<td><input type="radio" disabled ${r.a && r.a.is_team_leader ? 'checked' : ''}></td>`).join('');
 
-            const filterSlot = slots.find(s=>s.section==='filter_makers');
-            const filterA = assignments.find(x=>x.slot_id===filterSlot.id);
-            const filterStaff = findStaff(filterA, staffList);
-            const filterHtml = `<div class="filter-maker">${staffCardHtml(filterSlot, filterStaff, teamLetter, false, 'Filter Maker')}</div>`;
-
-            const elecSlot = slots.find(s=>s.section==='electricians');
-            const elecA = assignments.find(x=>x.slot_id===elecSlot.id);
-            const elecStaff = findStaff(elecA, staffList);
-            const elecHtml = `<div class="electrician-area">${staffCardHtml(elecSlot, elecStaff, teamLetter, false, 'Electrician')}</div>`;
+            const currentTL = roleAssignments.find(r => r.a && r.a.is_team_leader && r.staff);
+            const teamHeading = currentTL
+                ? `TEAM &mdash; Team Leader: ${currentTL.staff.full_name}`
+                : `TEAM &mdash; no Team Leader ticked yet`;
 
             const vac = leaveContentHtml(leaveList, staffList, 'vacation', assignments);
             const sick = leaveContentHtml(leaveList, staffList, 'sick', assignments);
@@ -2258,52 +2863,110 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
 
             return `<section class="shift-column ${isActiveNow?'active-now':''}">
 
-                <div class="shift-status-bar ${isActiveNow?'is-now':''}">${barLabel}</div>
-                <div class="shift-name shift-${teamLetter.toLowerCase()}">SHIFT ${teamLetter}</div>
-
-                <div class="section-header">OPERATORS</div>
-                <div class="sub-section-title">FM03 &amp; FM04</div>
-                ${fmHtml}
-
-                <div class="machine-grid">${machinesHtml}</div>
-
-                <div class="section-header">MECHANICS</div>
-                ${mechanicsHtml}
-
-                <div class="section-header">FILTER MAKERS</div>
-                ${filterHtml}
-
-                <div class="section-header">ELECTRICIANS</div>
-                ${elecHtml}
-
-                <div class="status-grid">
-                    <div class="status-section status-vacation">
-                        <div class="status-title">VACATION</div>
-                        <div class="status-content">${vac || ''}</div>
-                    </div>
-                    <div class="status-section status-sick">
-                        <div class="status-title">SICK LEAVE</div>
-                        <div class="status-content">${sick || ''}</div>
-                    </div>
-                    <div class="status-section status-family">
-                        <div class="status-title">FAMILY LEAVE</div>
-                        <div class="status-content">${fam || ''}</div>
-                    </div>
-                    <div class="status-section status-others">
-                        <div class="status-title">OTHERS</div>
-                        <div class="status-content">${others || ''}</div>
-                    </div>
-                    <div class="status-section status-permission">
-                        <div class="status-title">PERMISSION</div>
-                        <div class="status-content">${perm || ''}</div>
+                <div class="shift-name shift-${teamLetter.toLowerCase()}">
+                    <div class="shift-name-text">
+                        <span class="shift-status-line ${isActiveNow?'is-now':''}">${barLabel}</span>
+                        <span class="shift-name-main">SHIFT ${teamLetter}</span>
                     </div>
                 </div>
 
-                <div class="bottom-shift-label shift-${teamLetter.toLowerCase()}">
-                    SHIFT ${teamLetter}${accountable ? `<br><small>Accountable: ${accountable}</small>` : ''}
+                <button class="board-nav-arrow prev" onclick="jumpToRotation((rotationIndex+3)%4)" title="Previous shift">&#8249;</button>
+                <button class="board-nav-arrow next" onclick="jumpToRotation((rotationIndex+1)%4)" title="Next shift">&#8250;</button>
+
+                <div class="duty-board-body">
+                    <section class="machines-section">
+                        <div class="glossy-section-header">&#9881;&#65039; MACHINES</div>
+                        <div class="machines-top">${machinesTopHtml}</div>
+                        <div class="machines-second-row">${machinesSecondRowHtml}</div>
+                    </section>
+
+                    <section class="team-section">
+                        <h2 class="shift-${teamLetter.toLowerCase()}">${teamHeading}</h2>
+                        <table class="team-table">
+                            <tr>${headerRowHtml}</tr>
+                            <tr>${nameRowHtml}</tr>
+                            <tr class="tl-row">${tlRowHtml}</tr>
+                        </table>
+                    </section>
+
+                    <section class="status-section">
+                        <div class="status-card vacation">
+                            <h3>&#127796; VACATION</h3>
+                            <div class="status-box"><div class="status-content">${vac || ''}</div></div>
+                        </div>
+                        <div class="status-card sick">
+                            <h3>&#10133; SICK LEAVE</h3>
+                            <div class="status-box"><div class="status-content">${sick || ''}</div></div>
+                        </div>
+                        <div class="status-card family">
+                            <h3>&#128106; FAMILY LEAVE</h3>
+                            <div class="status-box"><div class="status-content">${fam || ''}</div></div>
+                        </div>
+                        <div class="status-card others">
+                            <h3>&#8943; OTHERS</h3>
+                            <div class="status-box"><div class="status-content">${others || ''}</div></div>
+                        </div>
+                        <div class="status-card permission">
+                            <h3>&#128196; PERMISSION</h3>
+                            <div class="status-box"><div class="status-content">${perm || ''}</div></div>
+                        </div>
+                    </section>
                 </div>
 
             </section>`;
+        }
+
+        /* ============================================================
+           ROTATING KIOSK VIEW — spotlights one shift column at a time
+           (A -> B -> C -> D -> A ...), 3 minutes each, instead of showing
+           all four at once. Persisted per-device via localStorage so a
+           fixed kiosk display keeps whatever mode it was left in.
+           ============================================================ */
+        const ROTATION_INTERVAL_MS = 3 * 60 * 1000;
+        let rotationEnabled = (localStorage.getItem('tcc_rotation_enabled') ?? 'true') === 'true';
+        let rotationIndex = 0;
+        let rotationTimer = null;
+
+        function applyRotationVisibility(){
+            const board = document.getElementById('rosterBoard');
+            board.classList.toggle('rotate-mode', rotationEnabled);
+            board.querySelectorAll('.shift-column').forEach((col, i)=>{
+                col.classList.toggle('rotate-active', !rotationEnabled || i === rotationIndex);
+            });
+            updateRotateBtnLabel();
+            fitBoardToScreen();
+        }
+
+        function updateRotateBtnLabel(){
+            const btn = document.getElementById('rotateToggleBtn');
+            if (!btn) return;
+            btn.innerHTML = rotationEnabled ? `&#128260; Rotating: Shift ${SHIFT_LETTERS[rotationIndex]}` : '&#128203; Show All Shifts';
+        }
+
+        function startRotationTimer(){
+            stopRotationTimer();
+            rotationTimer = setInterval(()=>{
+                rotationIndex = (rotationIndex + 1) % SHIFT_LETTERS.length;
+                applyRotationVisibility();
+            }, ROTATION_INTERVAL_MS);
+        }
+
+        function stopRotationTimer(){
+            if (rotationTimer) clearInterval(rotationTimer);
+            rotationTimer = null;
+        }
+
+        function jumpToRotation(i){
+            rotationIndex = i;
+            applyRotationVisibility();
+            if (rotationEnabled) startRotationTimer(); // reset the clock so it doesn't jump again a moment later
+        }
+
+        function toggleRotationMode(){
+            rotationEnabled = !rotationEnabled;
+            localStorage.setItem('tcc_rotation_enabled', String(rotationEnabled));
+            if (rotationEnabled) startRotationTimer(); else stopRotationTimer();
+            applyRotationVisibility();
         }
 
         async function renderBoard(){
@@ -2313,20 +2976,23 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
 
                 // Fetch everything up front, with each call individually
                 // fault-tolerant (safeRead + timeout). None of these throw.
-                const cycleStart = await DB.getRotationStart();
-                const staffList = await DB.getStaff();
-                const accountableMap = await DB.getAccountablePersons();
-                const leaveList = await DB.getLeave();
+                // Run them all in parallel (not one-by-one) so a slow/unhealthy
+                // Supabase project costs one ~8s timeout total, not up to 8 of
+                // them stacked in series.
+                const [cycleStart, staffList, leaveList, assignmentsList] = await Promise.all([
+                    DB.getRotationStart(),
+                    DB.getStaff(),
+                    DB.getLeave(),
+                    Promise.all(SHIFT_LETTERS.map(team => DB.getAssignments(team)))
+                ]);
                 const assignmentsByTeam = {};
-                for (const team of SHIFT_LETTERS){
-                    assignmentsByTeam[team] = await DB.getAssignments(team);
-                }
+                SHIFT_LETTERS.forEach((team, i) => { assignmentsByTeam[team] = assignmentsList[i]; });
 
                 const statuses = computeTeamStatus(today, cycleStart);
                 const activeWindow = currentlyActiveWindow();
                 // Only needed to find "who's genuinely next" while it's night —
-                // that's tomorrow's morning team, not today's (already-finished)
-                // morning team.
+                // that's tomorrow's day-shift team, not today's (already-finished)
+                // day-shift team.
                 const nextDayStatuses = activeWindow === 'NIGHT'
                     ? computeTeamStatus(nextDateString(today), cycleStart)
                     : null;
@@ -2341,14 +3007,14 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                     let isNextUp = false;
                     let nextUpWord = null;
                     if (!isActiveNow){
-                        if (activeWindow === 'MORNING' && statusWord === 'NIGHT'){
+                        if (activeWindow === 'DAY' && statusWord === 'NIGHT'){
                             isNextUp = true; nextUpWord = 'NIGHT';
-                        } else if (activeWindow === 'NIGHT' && nextDayStatuses[team] === 'MORNING'){
-                            isNextUp = true; nextUpWord = 'MORNING';
+                        } else if (activeWindow === 'NIGHT' && nextDayStatuses[team] === 'DAY'){
+                            isNextUp = true; nextUpWord = 'DAY';
                         }
                     }
                     html += shiftColumnHtml(team, statusWord, isActiveNow, isNextUp, nextUpWord, slots, staffList,
-                        accountableMap[team] || '', assignmentsByTeam[team], leaveList);
+                        assignmentsByTeam[team], leaveList);
                 }
                 document.getElementById('rosterBoard').innerHTML = html;
             } catch (e){
@@ -2363,7 +3029,7 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                     const slots = SLOT_TEMPLATE;
                     let html = '';
                     for (const team of SHIFT_LETTERS){
-                        html += shiftColumnHtml(team, 'OFF', false, false, null, slots, [], '', [], []);
+                        html += shiftColumnHtml(team, 'OFF', false, false, null, slots, [], [], []);
                     }
                     document.getElementById('rosterBoard').innerHTML = html;
                 } catch (e2){
@@ -2371,6 +3037,7 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                 }
             }
             renderConnStatus();
+            applyRotationVisibility();
         }
 
         function renderConnStatus(){
@@ -2395,68 +3062,8 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
         }
 
         /* ============================================================
-           STAFF DASHBOARD
-           ============================================================ */
-        const StaffView = {
-            activeTeamTab: 'A',
-            async init(){
-                await this.renderMyDuty();
-                this.renderTabs();
-                await this.renderRoster('A');
-            },
-            async renderMyDuty(){
-                const el = document.getElementById('myDutyCard');
-                if (!session.staff){ el.innerHTML = `<div class="app-msg error">Your login isn't linked to a staff profile yet. Contact your admin.</div>`; return; }
-                const cycleStart = await DB.getRotationStart();
-                const today = effectiveRotationDateString();
-                const statuses = computeTeamStatus(today, cycleStart);
-                let myTeam = null;
-                for (const t of SHIFT_LETTERS){
-                    const a = (await DB.getAssignments(t)).find(x=>x.staff_id===session.staff.id);
-                    if (a){ myTeam = t; break; }
-                }
-                if (!myTeam){ el.innerHTML = `Hi ${session.staff.full_name} &mdash; you're not yet assigned to a shift slot. Contact your admin.`; return; }
-                el.innerHTML = `Hi <b>${session.staff.full_name}</b> &mdash; you're on <b>Shift ${myTeam}</b>. Today's status: <b>${statuses[myTeam]}</b>`;
-            },
-            renderTabs(){
-                const el = document.getElementById('staffTeamTabs');
-                el.innerHTML = SHIFT_LETTERS.map(t=>
-                    `<button class="${t===this.activeTeamTab?'active':''}" onclick="StaffView.renderRoster('${t}')">Shift ${t}</button>`).join('');
-            },
-            async renderRoster(team){
-                this.activeTeamTab = team;
-                this.renderTabs();
-                const slots = await DB.getSlots();
-                const staffList = await DB.getStaff();
-                const assignments = await DB.getAssignments(team);
-                const rows = slots.map(sl=>{
-                    const a = assignments.find(x=>x.slot_id===sl.id);
-                    const staff = findStaff(a, staffList);
-                    return `<tr><td>${sl.label}</td><td>${sl.role_code}</td><td>${staff ? staff.full_name : '<i>Unassigned</i>'}</td><td>${staff ? (staff.job_title||'') : ''}</td><td>${a && a.is_team_leader ? 'TL' : ''}</td></tr>`;
-                }).join('');
-                document.getElementById('staffRosterBody').innerHTML = `<table class="app-table">
-                    <thead><tr><th>Line / Section</th><th>Role</th><th>Name</th><th>Title</th><th></th></tr></thead>
-                    <tbody>${rows}</tbody></table>`;
-            },
-            async submitLeave(){
-                const msg = document.getElementById('leaveReqMsg');
-                if (!session.staff){ msg.innerHTML = '<div class="app-msg error">No staff profile linked to this account.</div>'; return; }
-                const rec = {
-                    staff_id: session.staff.id,
-                    leave_type: document.getElementById('leaveType').value,
-                    start_date: document.getElementById('leaveStart').value,
-                    end_date: document.getElementById('leaveEnd').value || null,
-                    status: 'pending',
-                    note: document.getElementById('leaveNote').value,
-                };
-                if (!rec.start_date){ msg.innerHTML = '<div class="app-msg error">Pick a start date.</div>'; return; }
-                await DB.addLeave(rec);
-                msg.innerHTML = '<div class="app-msg ok">Leave request submitted &mdash; pending admin approval.</div>';
-            }
-        };
-
-        /* ============================================================
-           ADMIN PANEL
+           ADMIN PANEL (leaders only — regular staff have no accounts
+           and only ever see the public duty board)
            ============================================================ */
         const AdminView = {
             activeTeamTab: 'A',
@@ -2466,8 +3073,6 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                 await this.renderStaffDirectory();
                 await this.renderLeaveAdmin();
                 document.getElementById('cycleStartInput').value = await DB.getRotationStart();
-                const accMap = await DB.getAccountablePersons();
-                for (const t of SHIFT_LETTERS) document.getElementById('acc'+t).value = accMap[t] || '';
             },
             switchTab(tab){
                 document.querySelectorAll('.app-tabs .tab-btn').forEach(b=>b.classList.remove('active'));
@@ -2483,23 +3088,48 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
             async renderAssignments(team){
                 this.activeTeamTab = team;
                 this.renderTeamTabs();
-                const slots = await DB.getSlots();
+                // Machine slots (MP22/23/26/28/29/30, MO+PO each) are no longer
+                // listed here — they're set from the Staff Directory tab instead,
+                // right on each MO/PO's own row, which is much faster than
+                // hunting through 12 extra rows here for the common case of
+                // "assign this person to their usual machine".
+                const slots = (await DB.getSlots()).filter(s => s.section !== 'machine');
                 const staffList = await DB.getStaff();
                 const assignments = await DB.getAssignments(team);
-                const options = staffList.map(s=>`<option value="${s.id}">${s.full_name}</option>`).join('');
+                // Each slot's dropdown only offers staff whose OWN role
+                // matches that slot's role code — an MO row only lists
+                // MO's, a PO row only PO's, etc. "OTHER" (reserve/backup)
+                // slots still take anyone, since backup isn't tied to one
+                // skill. If someone already assigned here has a different
+                // role than the slot expects (old data), they're still
+                // included and flagged, so nothing gets silently hidden.
+                const optionsForSlot = (sl, currentStaffId) => {
+                    const matches = sl.role_code === 'OTHER'
+                        ? staffList
+                        : staffList.filter(s => s.role_code === sl.role_code || s.id === currentStaffId);
+                    return matches.map(s=>{
+                        const tag = s.home_team ? ` (Team ${s.home_team}${s.home_team===team?' — home':''})` : '';
+                        const mismatch = sl.role_code !== 'OTHER' && s.role_code !== sl.role_code ? ' — role mismatch' : '';
+                        return `<option value="${s.id}">${s.full_name}${tag}${mismatch}</option>`;
+                    }).join('');
+                };
                 const rows = slots.map(sl=>{
                     const a = assignments.find(x=>x.slot_id===sl.id);
-                    const showTL = sl.section==='mechanics';
-                    return `<tr>
-                        <td>${sl.label}</td><td>${sl.role_code}</td>
+                    const staff = findStaff(a, staffList);
+                    const onLoan = staff && staff.home_team && staff.home_team !== team;
+                    const showTL = sl.section==='roles';
+                    const options = optionsForSlot(sl, a ? a.staff_id : null);
+                    return `<tr${onLoan ? ' style="background:#fff8e6;"' : ''}>
+                        <td>${sl.label}${onLoan ? ` <span class="loan-tag" style="border-color:#b08c52;color:#8a6a2f;">ON LOAN &mdash; TEAM ${staff.home_team}</span>` : ''}</td><td>${sl.role_code}</td>
                         <td><select id="assign_${sl.id}"><option value="">&mdash; Unassigned &mdash;</option>${options}</select></td>
                         <td>${showTL ? `<input type="checkbox" id="tl_${sl.id}" ${a&&a.is_team_leader?'checked':''}>` : ''}</td>
                         <td><button class="app-btn" style="padding:6px 12px;font-size:12.5px;" onclick="AdminView.saveSlot('${team}','${sl.id}')">Save</button></td>
                     </tr>`;
                 }).join('');
                 document.getElementById('adminAssignBody').innerHTML = `<table class="app-table">
-                    <thead><tr><th>Line / Section</th><th>Role</th><th>Assign staff</th><th>Team Leader</th><th></th></tr></thead>
-                    <tbody>${rows}</tbody></table>`;
+                    <thead><tr><th>Role</th><th>Code</th><th>Assign staff</th><th>Team Leader</th><th></th></tr></thead>
+                    <tbody>${rows}</tbody></table>
+                    <p style="font-size:12.5px;color:#777;margin-top:10px;">Only one person can be Team Leader per shift &mdash; ticking TL here and saving automatically clears it from the other 4 roles. Each dropdown only lists staff whose own role matches that row (Reserve/Backup rows take anyone). Machine assignments (MP22, MP23, etc.) are set from the Staff Directory tab instead &mdash; find the MO/PO there and pick their machine.</p>`;
                 assignments.forEach(a=>{
                     const sel = document.getElementById('assign_'+a.slot_id);
                     if (sel) sel.value = a.staff_id;
@@ -2510,16 +3140,103 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                 const tlEl = document.getElementById('tl_'+slotId);
                 const isTL = tlEl ? tlEl.checked : false;
                 await DB.setAssignment(team, slotId, staffId, isTL);
-                alert('Saved.');
+                await this.renderAssignments(team);
+                await renderBoard();
             },
             async renderStaffDirectory(){
-                const staffList = await DB.getStaff();
-                const rows = staffList.map(s=>`<tr>
-                    <td>${s.full_name}</td><td>${s.email||''}</td><td>${s.job_title||''}</td><td>${s.role_code||''}</td><td>${s.is_admin?'Yes':''}</td>
+                this.lastStaffList = await DB.getStaff();
+                // Build a staffId -> current machine lookup by checking every
+                // team's machine-section assignments (a person's machine is
+                // tied to whichever team they're actually placed in for that
+                // slot — normally their own home_team).
+                const slots = await DB.getSlots();
+                const machineSlots = slots.filter(s => s.section === 'machine');
+                const allAssignments = await Promise.all(SHIFT_LETTERS.map(t => DB.getAssignments(t)));
+                this.lastMachineMap = {};
+                allAssignments.forEach((teamAssignments, i)=>{
+                    const team = SHIFT_LETTERS[i];
+                    teamAssignments.forEach(a=>{
+                        const sl = machineSlots.find(s=>s.id===a.slot_id);
+                        if (sl) this.lastMachineMap[a.staff_id] = { team, machine: sl.machine, slotId: sl.id };
+                    });
+                });
+                this.renderStaffDirectoryRows();
+            },
+            renderStaffDirectoryRows(){
+                const staffList = this.lastStaffList || [];
+                const machineMap = this.lastMachineMap || {};
+                const q = (document.getElementById('staffSearch')?.value || '').trim().toLowerCase();
+                const roleFilter = document.getElementById('staffRoleFilter')?.value || '';
+                let filtered = q ? staffList.filter(s => (s.full_name||'').toLowerCase().includes(q)) : staffList.slice();
+                if (roleFilter) filtered = filtered.filter(s => s.role_code === roleFilter);
+                // Group by role so, e.g., picking "MO" (or just scanning the
+                // unfiltered list) shows all the MO's together, each with their
+                // own machine picker — instead of that living as 12 separate
+                // rows over in Assignments.
+                filtered.sort((a,b)=> (a.role_code||'').localeCompare(b.role_code||'') || (a.full_name||'').localeCompare(b.full_name||''));
+                const homeTeamSelect = s => `<select onchange="AdminView.updateHomeTeam('${s.id}', this.value)" style="font-size:12.5px;padding:2px 4px;">
+                    <option value="" ${!s.home_team?'selected':''}>&mdash;</option>
+                    ${SHIFT_LETTERS.map(t=>`<option value="${t}" ${s.home_team===t?'selected':''}>Shift ${t}</option>`).join('')}
+                </select>`;
+                const machineCell = s => {
+                    if (s.role_code !== 'MO' && s.role_code !== 'PO') return '&mdash;';
+                    if (!s.home_team) return `<span style="color:#999;font-size:12px;">set home team first</span>`;
+                    const current = machineMap[s.id];
+                    const options = MACHINE_LABELS.map(m=>
+                        `<option value="${m}" ${current && current.machine===m ? 'selected' : ''}>${m}</option>`).join('');
+                    return `<select onchange="AdminView.updateStaffMachine('${s.id}', this.value)" style="font-size:12.5px;padding:2px 4px;">
+                        <option value="" ${!current?'selected':''}>&mdash; none &mdash;</option>
+                        ${options}
+                    </select>`;
+                };
+                const rows = filtered.map(s=>`<tr>
+                    <td>${s.full_name}</td><td>${s.email||''}</td><td>${s.job_title||''}</td><td>${s.role_code||''}</td><td>${homeTeamSelect(s)}</td><td>${machineCell(s)}</td><td>${s.is_admin?'Yes':''}</td>
                 </tr>`).join('');
-                document.getElementById('staffDirectory').innerHTML = `<h3 style="margin-bottom:10px;">All staff</h3>
-                    <table class="app-table"><thead><tr><th>Name</th><th>Email</th><th>Title</th><th>Role</th><th>Admin?</th></tr></thead>
+                document.getElementById('staffDirectory').innerHTML = `<h3 style="margin-bottom:10px;">All staff (${filtered.length}${q ? ` matching &ldquo;${q}&rdquo;` : ''})</h3>
+                    <p style="font-size:12.5px;color:#777;margin-top:0;">Home team is the team someone normally belongs to. For MO/PO staff, Machine assigns them straight to that machine on their home team's board &mdash; no need to go find the row in Assignments. Assigning someone in a <i>different</i> team there still marks them on loan, coloured with their home team's colour.</p>
+                    <table class="app-table"><thead><tr><th>Name</th><th>Email</th><th>Title</th><th>Role</th><th>Home team</th><th>Machine</th><th>Leader?</th></tr></thead>
                     <tbody>${rows}</tbody></table>`;
+            },
+            async updateStaffMachine(staffId, newMachine){
+                const staffList = this.lastStaffList || [];
+                const s = staffList.find(x=>x.id===staffId);
+                if (!s) return;
+                if (!s.home_team){
+                    alert('Set a home team for this person first.');
+                    await this.renderStaffDirectory();
+                    return;
+                }
+                const current = (this.lastMachineMap || {})[staffId];
+                const roleCode = s.role_code === 'PO' ? 'po' : 'mo';
+                try {
+                    // Clear their previous machine slot first (if any) so they
+                    // don't end up double-booked across two machines.
+                    if (current){
+                        await DB.setAssignment(current.team, current.slotId, null, false);
+                    }
+                    if (newMachine){
+                        const newSlotId = newMachine.toLowerCase() + roleCode;
+                        await DB.setAssignment(s.home_team, newSlotId, staffId, false);
+                    }
+                    await this.renderStaffDirectory();
+                    await renderBoard();
+                } catch (e){
+                    alert('Could not update machine: ' + (e.message || e));
+                    await this.renderStaffDirectory();
+                }
+            },
+            async updateHomeTeam(staffId, homeTeam){
+                try {
+                    await DB.updateStaffHomeTeam(staffId, homeTeam);
+                    if (this.lastStaffList){
+                        const s = this.lastStaffList.find(x=>x.id===staffId);
+                        if (s) s.home_team = homeTeam || null;
+                    }
+                    await this.renderAssignments(this.activeTeamTab);
+                    await renderBoard();
+                } catch (e){
+                    alert('Could not update home team: ' + (e.message || e));
+                }
             },
             async addStaff(){
                 const msg = document.getElementById('addStaffMsg');
@@ -2532,6 +3249,7 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                 const rec = {
                     full_name: name, email, job_title: document.getElementById('newStaffTitle').value,
                     role_code: document.getElementById('newStaffRole').value,
+                    home_team: document.getElementById('newStaffHomeTeam').value || null,
                     phone: document.getElementById('newStaffPhone').value,
                     is_admin: document.getElementById('newStaffAdmin').checked,
                     photo_url,
@@ -2560,7 +3278,7 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                     const delim = line.includes('\t') ? '\t' : ',';
                     const parts = line.split(delim).map(p=>p.trim());
                     if (i===0 && (parts[1]||'').toLowerCase().includes('email')) return; // header row
-                    const [full_name, email, job_title, roleRaw, phone] = parts;
+                    const [full_name, email, job_title, roleRaw, phone, homeTeamRaw] = parts;
                     if (!full_name || !email){
                         errors.push(`Line ${i+1}: missing name or email — skipped.`);
                         return;
@@ -2570,7 +3288,12 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                         errors.push(`Line ${i+1}: role "${roleRaw||''}" not recognized (must be MO/PO/MM/PM/ET/OTHER) — skipped.`);
                         return;
                     }
-                    rows.push({ full_name, email, job_title: job_title || '', role_code, phone: phone || '', is_admin: false });
+                    let home_team = (homeTeamRaw || '').trim().toUpperCase();
+                    if (home_team && !SHIFT_LETTERS.includes(home_team)){
+                        errors.push(`Line ${i+1}: home team "${homeTeamRaw}" not recognized (must be A/B/C/D) — left unassigned.`);
+                        home_team = '';
+                    }
+                    rows.push({ full_name, email, job_title: job_title || '', role_code, phone: phone || '', home_team: home_team || null, is_admin: false });
                 });
                 return { rows, errors };
             },
@@ -2685,13 +3408,6 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
                 await DB.saveRotationStart(val);
                 document.getElementById('rotationMsg').innerHTML = '<div class="app-msg ok">Rotation start date saved.</div>';
                 await renderBoard();
-            },
-            async saveAccountable(){
-                for (const t of SHIFT_LETTERS){
-                    await DB.saveAccountablePerson(t, document.getElementById('acc'+t).value.trim());
-                }
-                document.getElementById('accountableMsg').innerHTML = '<div class="app-msg ok">Saved.</div>';
-                await renderBoard();
             }
         };
 
@@ -2711,13 +3427,14 @@ John Smith, john@tcc.co.tz, Packer Mechanic, PM, 0798765432"></textarea>
             setInterval(tickClock, 1000);
             await renderBoard();
             setInterval(renderBoard, 60000);
+            if (rotationEnabled) startRotationTimer();
 
             if (sb){
                 try {
                     const { data: { session: s } } = await withTimeout(sb.auth.getSession(), 8000);
-                    if (s){ await loadStaffProfile(s.user); afterLogin(); }
+                    if (s){ await loadStaffProfile(s.user); afterLogin(false); }
                     sb.auth.onAuthStateChange(async (event, s)=>{
-                        if (event === 'SIGNED_IN' && s){ await loadStaffProfile(s.user); afterLogin(); }
+                        if (event === 'SIGNED_IN' && s){ await loadStaffProfile(s.user); afterLogin(false); }
                         if (event === 'SIGNED_OUT'){ session = { user:null, staff:null }; renderNav(); }
                     });
                 } catch (e){
